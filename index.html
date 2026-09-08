@@ -1698,6 +1698,20 @@
     body.read-only-mode #btn-save-changes {
       display: none !important;
     }
+    body.read-only-mode .day-btn,
+    body.read-only-mode .trip-tab {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body.read-only-mode .day-btn.touch-dragging,
+    body.read-only-mode .trip-tab.touch-dragging,
+    body.read-only-mode .day-btn.drag-over,
+    body.read-only-mode .trip-tab.drag-over {
+      transform: none !important;
+      opacity: 1 !important;
+      box-shadow: none !important;
+      background: inherit !important;
+    }
     body.read-only-mode .visited-toggle {
       cursor: pointer;
     }
@@ -2612,8 +2626,16 @@
 
                 // Sync active trip & update local cache
                 syncActiveTripAppData();
-                localStorage.setItem(TRIPS_STORAGE_KEY, JSON.stringify(tripManager));
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      try {
+        localStorage.setItem(TRIPS_STORAGE_KEY, JSON.stringify(tripManager));
+      } catch (err) {
+        console.warn('localStorage TRIPS quota exceeded, cloud sync active:', err);
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (err) {
+        console.warn('localStorage STORAGE_KEY quota exceeded:', err);
+      }
 
                 // Re-render UI views
                 renderTripTabs();
@@ -2752,8 +2774,16 @@
             };
             syncActiveTripAppData();
             currentItinFilterDay = 'ALL';
-            localStorage.setItem(TRIPS_STORAGE_KEY, JSON.stringify(tripManager));
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      try {
+        localStorage.setItem(TRIPS_STORAGE_KEY, JSON.stringify(tripManager));
+      } catch (err) {
+        console.warn('localStorage TRIPS quota exceeded, cloud sync active:', err);
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (err) {
+        console.warn('localStorage STORAGE_KEY quota exceeded:', err);
+      }
 
             renderTripTabs();
             populateCityFilter();
@@ -3357,22 +3387,22 @@
         daysList.forEach((d, idx) => {
           const btn = document.createElement('div');
           btn.className = `day-btn ${currentItinFilterDay === d ? 'active' : ''}`;
-          btn.title = '點選切換，可拖曳或長按移動天數順序，點 ✏️ 可修改名稱';
-          btn.setAttribute('draggable', 'true');
+          btn.title = isEditUnlocked() ? '點選切換，可拖曳或長按移動天數順序，點 ✏️ 可修改名稱' : '點選切換日程檢視';
+          btn.setAttribute('draggable', isEditUnlocked() ? 'true' : 'false');
           btn.setAttribute('data-day-index', idx);
           btn.setAttribute('data-day-name', d);
 
           // Desktop Drag events
-          btn.ondragstart = (e) => onDayDragStart(e, idx);
+          btn.ondragstart = (e) => { if (!isEditUnlocked()) { if (e && e.preventDefault) e.preventDefault(); return false; } onDayDragStart(e, idx); };
           btn.ondragover = (e) => onDayDragOver(e, idx);
           btn.ondragleave = (e) => onDayDragLeave(e);
           btn.ondrop = (e) => onDayDrop(e, idx);
           btn.ondragend = (e) => onDayDragEnd(e);
 
           // Mobile Touch events
-          btn.ontouchstart = (e) => onDayTouchStart(e, idx);
-          btn.ontouchmove = (e) => onDayTouchMove(e);
-          btn.ontouchend = (e) => onDayTouchEnd(e);
+          btn.ontouchstart = (e) => { if (!isEditUnlocked()) return; onDayTouchStart(e, idx); };
+          btn.ontouchmove = (e) => { if (!isEditUnlocked()) return; onDayTouchMove(e); };
+          btn.ontouchend = (e) => { if (!isEditUnlocked()) return; onDayTouchEnd(e); };
 
           btn.onclick = (e) => {
             if (hasJustDraggedDay || btn.classList.contains('prevent-click')) {
@@ -3627,7 +3657,7 @@
         const img = new Image();
         img.onload = () => {
           // Auto resize to max 900x600 for sharp look and small localStorage footprint
-          const maxW = 900;
+          const maxW = 800;
           const maxH = 600;
           let w = img.width;
           let h = img.height;
@@ -3649,7 +3679,7 @@
           ctx.drawImage(img, 0, 0, w, h);
 
           // Convert to JPEG at 0.82 quality
-          const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.78);
           setSpotPhotoPreview(optimizedDataUrl);
           showToast('📸 照片已載入預覽！請記得點選下方的「確認儲存」');
         };
@@ -4128,6 +4158,10 @@
     }
 
     function moveDay(fromIndex, toIndex) {
+      if (!isEditUnlocked()) {
+        openUnlockModal('目前為唯讀模式。若要調整天數順序，請輸入通行密碼解鎖：');
+        return;
+      }
       if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
       const originalDays = getSortedDaysList();
       if (fromIndex >= originalDays.length || toIndex >= originalDays.length) return;
@@ -4210,6 +4244,10 @@
     }
 
     function moveDayRelative(offset) {
+      if (!isEditUnlocked()) {
+        openUnlockModal('目前為唯讀模式。若要調整天數順序，請輸入通行密碼解鎖：');
+        return;
+      }
       const oldDay = document.getElementById('rename-old-day').value;
       if (!oldDay) return;
       const sortedDays = getSortedDaysList();
@@ -4226,6 +4264,7 @@
 
     // --- Desktop Drag Handlers for Day ---
     function onDayDragStart(e, index) {
+      if (!isEditUnlocked()) { if (e && e.preventDefault) e.preventDefault(); return false; }
       draggedDayIndex = index;
       hasJustDraggedDay = true;
       e.dataTransfer.effectAllowed = 'move';
@@ -4246,6 +4285,7 @@
     }
 
     function onDayDrop(e, index) {
+      if (!isEditUnlocked()) return;
       e.preventDefault();
       e.currentTarget.classList.remove('drag-over');
       if (draggedDayIndex !== null && draggedDayIndex !== index) {
@@ -4264,6 +4304,7 @@
 
     // --- Mobile Touch Long-Press Drag Handlers for Day ---
     function onDayTouchStart(e, index) {
+      if (!isEditUnlocked()) return;
       if (e.touches.length !== 1) return;
       const touch = e.touches[0];
       const btnEl = e.currentTarget;
@@ -4290,6 +4331,7 @@
     }
 
     function onDayTouchMove(e) {
+      if (!isEditUnlocked()) return;
       if (!touchDayState.btnEl) return;
       const touch = e.touches[0];
       const dx = Math.abs(touch.clientX - touchDayState.startX);
@@ -4324,6 +4366,7 @@
     }
 
     function onDayTouchEnd(e) {
+      if (!isEditUnlocked()) return;
       clearTimeout(touchDayState.timer);
       if (touchDayState.btnEl) {
         touchDayState.btnEl.classList.remove('touch-dragging');
@@ -4517,7 +4560,7 @@
           <div class="trip-tab ${isActive ? 'active' : ''}" 
                data-trip-id="${trip.id}"
                data-trip-index="${index}"
-               draggable="true"
+               draggable="${isEditUnlocked() ? 'true' : 'false'}"
                ondragstart="onTripDragStart(event, ${index})"
                ondragover="onTripDragOver(event, ${index})"
                ondragleave="onTripDragLeave(event)"
@@ -4569,6 +4612,10 @@
     }
 
     function moveTrip(fromIndex, toIndex) {
+      if (!isEditUnlocked()) {
+        openUnlockModal('目前為唯讀模式。若要調整分頁順序，請輸入通行密碼解鎖：');
+        return;
+      }
       if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
       if (fromIndex >= tripManager.trips.length || toIndex >= tripManager.trips.length) return;
 
@@ -4576,8 +4623,16 @@
       tripManager.trips.splice(toIndex, 0, movedTrip);
 
       // Save locally
-      localStorage.setItem(TRIPS_STORAGE_KEY, JSON.stringify(tripManager));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      try {
+        localStorage.setItem(TRIPS_STORAGE_KEY, JSON.stringify(tripManager));
+      } catch (err) {
+        console.warn('localStorage TRIPS quota exceeded, cloud sync active:', err);
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (err) {
+        console.warn('localStorage STORAGE_KEY quota exceeded:', err);
+      }
 
       // Push to Firebase if edit unlocked
       if (isEditUnlocked()) {
@@ -4589,6 +4644,10 @@
     }
 
     function moveTripRelative(offset) {
+      if (!isEditUnlocked()) {
+        openUnlockModal('目前為唯讀模式。若要調整分頁順序，請輸入通行密碼解鎖：');
+        return;
+      }
       const tripId = document.getElementById('rename-trip-id').value;
       if (!tripId) return;
       const idx = tripManager.trips.findIndex(t => t.id === tripId);
@@ -4604,6 +4663,7 @@
 
     // --- Desktop Drag and Drop Handlers ---
     function onTripDragStart(e, index) {
+      if (!isEditUnlocked()) { if (e && e.preventDefault) e.preventDefault(); return false; }
       draggedTripIndex = index;
       hasJustDraggedTab = true;
       e.dataTransfer.effectAllowed = 'move';
@@ -4642,6 +4702,7 @@
 
     // --- Mobile Touch Long-Press Drag Handlers ---
     function onTripTouchStart(e, index) {
+      if (!isEditUnlocked()) return;
       if (e.touches.length !== 1) return;
       const touch = e.touches[0];
       const tabEl = e.currentTarget;
@@ -4669,6 +4730,7 @@
     }
 
     function onTripTouchMove(e) {
+      if (!isEditUnlocked()) return;
       if (!touchTripState.tabEl) return;
       const touch = e.touches[0];
       const dx = Math.abs(touch.clientX - touchTripState.startX);
@@ -4706,6 +4768,7 @@
     }
 
     function onTripTouchEnd(e) {
+      if (!isEditUnlocked()) return;
       clearTimeout(touchTripState.timer);
       if (touchTripState.tabEl) {
         touchTripState.tabEl.classList.remove('touch-dragging');
@@ -5155,9 +5218,17 @@
         console.warn('唯讀模式中，略過本地儲存與雲端推送');
         return;
       }
-      localStorage.setItem(TRIPS_STORAGE_KEY, JSON.stringify(tripManager));
+      try {
+        localStorage.setItem(TRIPS_STORAGE_KEY, JSON.stringify(tripManager));
+      } catch (err) {
+        console.warn('localStorage TRIPS quota exceeded, cloud sync active:', err);
+      }
       // Sync active trip to legacy key for backwards compatibility
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (err) {
+        console.warn('localStorage STORAGE_KEY quota exceeded:', err);
+      }
       // Automatically sync changes to Firebase in real-time
       schedulePushToFirebase();
     }
