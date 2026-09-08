@@ -1086,7 +1086,6 @@
       margin-bottom: 0.85rem;
       line-height: 1.5;
       white-space: pre-line;
-      flex: 1;
     }
 
     .spot-meta-row {
@@ -1097,11 +1096,29 @@
       gap: 0.4rem;
     }
 
+    .spot-meta-row.spot-meta-hours {
+      align-items: flex-start;
+      margin-bottom: 0.45rem;
+    }
+
+    .spot-hours-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.22rem;
+      line-height: 1.45;
+      font-size: 0.82rem;
+      color: var(--text-main);
+    }
+
+    .spot-hours-item {
+      white-space: nowrap;
+    }
+
     .spot-actions {
       display: flex;
       justify-content: flex-end;
       gap: 0.5rem;
-      margin-top: 1rem;
+      margin-top: auto;
       padding-top: 0.75rem;
       border-top: 1px solid var(--border-color);
     }
@@ -1954,12 +1971,16 @@
         </div>
         <div style="display: flex; gap: 1rem;">
           <div class="form-group" style="flex: 1;">
-            <label>城市 / 地區</label>
-            <input type="text" class="form-control" id="form-spot-city" placeholder="例如：中央區、北區、京都">
+            <label style="margin-bottom: 0.35rem;">城市 / 地區</label>
+            <select class="form-control" id="form-spot-city-select" style="margin-bottom: 0.4rem;" onchange="handleCitySelectChange(this.value)">
+            </select>
+            <input type="text" class="form-control" id="form-spot-city" placeholder="或在此直接手動輸入城市" autocomplete="off">
           </div>
           <div class="form-group" style="flex: 1;">
-            <label>類型 (以逗號分隔)</label>
-            <input type="text" class="form-control" id="form-spot-type" placeholder="例如：Sightseeing, Food">
+            <label style="margin-bottom: 0.35rem;">類型 (以逗號分隔)</label>
+            <select class="form-control" id="form-spot-type-select" style="margin-bottom: 0.4rem;" onchange="handleTypeSelectChange(this.value)">
+            </select>
+            <input type="text" class="form-control" id="form-spot-type" placeholder="例如：Sightseeing, Food" autocomplete="off">
           </div>
         </div>
         <div class="form-group">
@@ -1968,7 +1989,7 @@
         </div>
         <div class="form-group">
           <label>營業時間</label>
-          <input type="text" class="form-control" id="form-spot-hours" placeholder="例如：10:00–21:00">
+          <textarea class="form-control" id="form-spot-hours" rows="4" placeholder="例如：&#10;星期日 11:00-23:00&#10;星期一 11:00-23:00&#10;...可自由按 Enter 換行或貼上 Google Maps 時間" style="resize: vertical; min-height: 80px; font-family: inherit; font-size: 0.88rem; line-height: 1.5;"></textarea>
         </div>
         <div class="form-group">
           <label>是否已拜訪</label>
@@ -2242,91 +2263,62 @@
         </div>
         <div class="form-group">
           <label>代表圖示 Emoji（依各大洲與旅遊特色分類）</label>
-          <div class="emoji-picker-container">
-            <!-- 亞洲 (Asia) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🌏 亞洲 (Asia)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn active" onclick="selectTripEmoji(this, '🗼')">🗼 東京</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🗻')">🗻 富士</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🍵')">🍵 京都</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🍜')">🍜 大阪</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '❄️')">❄️ 北海道</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🧋')">🧋 台灣</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🥢')">🥢 香港</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🏯')">🏯 韓國</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🐘')">🐘 泰國</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🦁')">🦁 新加坡</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🌴')">🌴 峇里島</button>
-              </div>
-            </div>
-
-            <!-- 歐洲 (Europe) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🏰 歐洲 (Europe)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🥐')">🥐 法國巴黎</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🇬🇧')">🇬🇧 英國倫敦</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🍕')">🍕 義大利</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🍺')">🍺 德國</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🏛️')">🏛️ 希臘</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🇪🇸')">🇪🇸 西班牙</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '⛷️')">⛷️ 瑞士阿爾卑斯</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🏰')">🏰 歐陸古堡</button>
-              </div>
-            </div>
-
-            <!-- 美洲 (Americas) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🗽 美國與美洲 (Americas)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🗽')">🗽 紐約/美國</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🌉')">🌉 舊金山</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🎰')">🎰 拉斯維加斯</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🍁')">🍁 加拿大</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🌮')">🌮 墨西哥</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🇧🇷')">🇧🇷 南美巴西</button>
-              </div>
-            </div>
-
-            <!-- 澳洲與紐西蘭 (Oceania) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🦘 澳洲與紐西蘭 (Oceania)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🦘')">🦘 澳洲</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🐨')">🐨 無尾熊</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🥝')">🥝 紐西蘭</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🏄')">🏄 黃金海岸</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '⛵')">⛵ 雪梨港</button>
-              </div>
-            </div>
-
-            <!-- 非洲與探險 (Africa & Middle East) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🦒 非洲與探險 (Africa)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🦒')">🦒 非洲肯亞</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🐪')">🐪 埃及金字塔</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🏜️')">🏜️ 撒哈拉沙漠</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🕌')">🕌 杜拜/中東</button>
-              </div>
-            </div>
-
-            <!-- 主題與渡假 (Themes) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🏖️ 度假與主題 (Themes)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🛫')">🛫 航班</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🎒')">🎒 自由行</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🏖️')">🏖️ 海島渡假</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🚢')">🚢 郵輪之旅</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🏕️')">🏕️ 露營大自然</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🛍️')">🛍️ 購物商圈</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectTripEmoji(this, '🚗')">🚗 自駕遊</button>
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+          <select class="form-control" id="new-trip-emoji-select" onchange="handleTripEmojiSelectChange(this.value, 'new-trip')" style="margin-bottom: 0.45rem;">
+            <optgroup label="🌏 亞洲 (Asia)">
+              <option value="🗼" selected>🗼 東京</option>
+              <option value="🗻">🗻 富士</option>
+              <option value="🍵">🍵 京都</option>
+              <option value="🍜">🍜 大阪</option>
+              <option value="❄️">❄️ 北海道</option>
+              <option value="🇹🇼">🇹🇼 台灣</option>
+              <option value="🥢">🥢 香港</option>
+              <option value="🏯">🏯 韓國</option>
+              <option value="🐘">🐘 泰國</option>
+              <option value="🦁">🦁 新加坡</option>
+              <option value="🌴">🌴 峇里島</option>
+            </optgroup>
+            <optgroup label="🏰 歐洲 (Europe)">
+              <option value="🥐">🥐 法國巴黎</option>
+              <option value="🇬🇧">🇬🇧 英國倫敦</option>
+              <option value="🍕">🍕 義大利</option>
+              <option value="🍺">🍺 德國</option>
+              <option value="🏛️">🏛️ 希臘</option>
+              <option value="🇪🇸">🇪🇸 西班牙</option>
+              <option value="⛷️">⛷️ 瑞士阿爾卑斯</option>
+              <option value="🏰">🏰 歐陸古堡</option>
+            </optgroup>
+            <optgroup label="🗽 美國與美洲 (Americas)">
+              <option value="🗽">🗽 紐約/美國</option>
+              <option value="🌉">🌉 舊金山</option>
+              <option value="🎰">🎰 拉斯維加斯</option>
+              <option value="🍁">🍁 加拿大</option>
+              <option value="🌮">🌮 墨西哥</option>
+              <option value="🇧🇷">🇧🇷 南美巴西</option>
+            </optgroup>
+            <optgroup label="🦘 澳洲與紐西蘭 (Oceania)">
+              <option value="🦘">🦘 澳洲</option>
+              <option value="🐨">🐨 無尾熊</option>
+              <option value="🥝">🥝 紐西蘭</option>
+              <option value="🏄">🏄 黃金海岸</option>
+              <option value="⛵">⛵ 雪梨港</option>
+            </optgroup>
+            <optgroup label="🦒 非洲與探險 (Africa)">
+              <option value="🦒">🦒 非洲肯亞</option>
+              <option value="🐪">🐪 埃及金字塔</option>
+              <option value="🏜️">🏜️ 撒哈拉沙漠</option>
+              <option value="🕌">🕌 杜拜/中東</option>
+            </optgroup>
+            <optgroup label="🏖️ 度假與主題 (Themes)">
+              <option value="🛫">🛫 航班</option>
+              <option value="🎒">🎒 自由行</option>
+              <option value="🏖️">🏖️ 海島渡假</option>
+              <option value="🚢">🚢 郵輪之旅</option>
+              <option value="🏕️">🏕️ 露營大自然</option>
+              <option value="🛍️">🛍️ 購物商圈</option>
+              <option value="🚗">🚗 自駕遊</option>
+            </optgroup>
+          </select>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
             <span style="font-size: 0.82rem; color: var(--text-muted); white-space: nowrap;">或自訂輸入任意 Emoji：</span>
             <input type="text" id="new-trip-custom-emoji" class="form-control" style="width: 85px; text-align: center; font-size: 1.15rem; padding: 0.25rem 0.4rem;" maxlength="4" placeholder="請填寫" oninput="handleCustomTripEmoji(this.value, 'new-trip')" />
           </div>
@@ -2363,102 +2355,66 @@
         </div>
         <div class="form-group">
           <label>代表圖示 Emoji（依各大洲與旅遊特色分類）</label>
-          <div class="emoji-picker-container" id="rename-trip-emoji-group">
-            <!-- 亞洲 (Asia) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🌏 亞洲 (Asia)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🗼')">🗼 東京</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🗻')">🗻 富士</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🍵')">🍵 京都</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🍜')">🍜 大阪</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '❄️')">❄️ 北海道</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🧋')">🧋 台灣</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🥢')">🥢 香港</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🏯')">🏯 韓國</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🐘')">🐘 泰國</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🦁')">🦁 新加坡</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🌴')">🌴 峇里島</button>
-              </div>
-            </div>
-
-            <!-- 歐洲 (Europe) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🏰 歐洲 (Europe)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🥐')">🥐 法國巴黎</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🇬🇧')">🇬🇧 英國倫敦</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🍕')">🍕 義大利</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🍺')">🍺 德國</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🏛️')">🏛️ 希臘</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🇪🇸')">🇪🇸 西班牙</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '⛷️')">⛷️ 瑞士阿爾卑斯</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🏰')">🏰 歐陸古堡</button>
-              </div>
-            </div>
-
-            <!-- 美洲 (Americas) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🗽 美國與美洲 (Americas)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🗽')">🗽 紐約/美國</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🌉')">🌉 舊金山</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🎰')">🎰 拉斯維加斯</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🍁')">🍁 加拿大</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🌮')">🌮 墨西哥</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🇧🇷')">🇧🇷 南美巴西</button>
-              </div>
-            </div>
-
-            <!-- 澳洲與紐西蘭 (Oceania) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🦘 澳洲與紐西蘭 (Oceania)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🦘')">🦘 澳洲</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🐨')">🐨 無尾熊</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🥝')">🥝 紐西蘭</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🏄')">🏄 黃金海岸</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '⛵')">⛵ 雪梨港</button>
-              </div>
-            </div>
-
-            <!-- 非洲與探險 (Africa & Middle East) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🦒 非洲與探險 (Africa)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🦒')">🦒 非洲肯亞</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🐪')">🐪 埃及金字塔</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🏜️')">🏜️ 撒哈拉沙漠</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🕌')">🕌 杜拜/中東</button>
-              </div>
-            </div>
-
-            <!-- 主題與渡假 (Themes) -->
-            <div class="emoji-category-group">
-              <div class="emoji-category-title">🏖️ 度假與主題 (Themes)</div>
-              <div class="emoji-picker-row">
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🛫')">🛫 航班</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🎒')">🎒 自由行</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🏖️')">🏖️ 海島渡假</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🚢')">🚢 郵輪之旅</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🏕️')">🏕️ 露營大自然</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🛍️')">🛍️ 購物商圈</button>
-                <button type="button" class="emoji-opt-btn" onclick="selectRenameTripEmoji(this, '🚗')">🚗 自駕遊</button>
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+          <select class="form-control" id="rename-trip-emoji-select" onchange="handleTripEmojiSelectChange(this.value, 'rename-trip')" style="margin-bottom: 0.45rem;">
+            <optgroup label="🌏 亞洲 (Asia)">
+              <option value="🗼">🗼 東京</option>
+              <option value="🗻">🗻 富士</option>
+              <option value="🍵">🍵 京都</option>
+              <option value="🍜">🍜 大阪</option>
+              <option value="❄️">❄️ 北海道</option>
+              <option value="🇹🇼">🇹🇼 台灣</option>
+              <option value="🥢">🥢 香港</option>
+              <option value="🏯">🏯 韓國</option>
+              <option value="🐘">🐘 泰國</option>
+              <option value="🦁">🦁 新加坡</option>
+              <option value="🌴">🌴 峇里島</option>
+            </optgroup>
+            <optgroup label="🏰 歐洲 (Europe)">
+              <option value="🥐">🥐 法國巴黎</option>
+              <option value="🇬🇧">🇬🇧 英國倫敦</option>
+              <option value="🍕">🍕 義大利</option>
+              <option value="🍺">🍺 德國</option>
+              <option value="🏛️">🏛️ 希臘</option>
+              <option value="🇪🇸">🇪🇸 西班牙</option>
+              <option value="⛷️">⛷️ 瑞士阿爾卑斯</option>
+              <option value="🏰">🏰 歐陸古堡</option>
+            </optgroup>
+            <optgroup label="🗽 美國與美洲 (Americas)">
+              <option value="🗽">🗽 紐約/美國</option>
+              <option value="🌉">🌉 舊金山</option>
+              <option value="🎰">🎰 拉斯維加斯</option>
+              <option value="🍁">🍁 加拿大</option>
+              <option value="🌮">🌮 墨西哥</option>
+              <option value="🇧🇷">🇧🇷 南美巴西</option>
+            </optgroup>
+            <optgroup label="🦘 澳洲與紐西蘭 (Oceania)">
+              <option value="🦘">🦘 澳洲</option>
+              <option value="🐨">🐨 無尾熊</option>
+              <option value="🥝">🥝 紐西蘭</option>
+              <option value="🏄">🏄 黃金海岸</option>
+              <option value="⛵">⛵ 雪梨港</option>
+            </optgroup>
+            <optgroup label="🦒 非洲與探險 (Africa)">
+              <option value="🦒">🦒 非洲肯亞</option>
+              <option value="🐪">🐪 埃及金字塔</option>
+              <option value="🏜️">🏜️ 撒哈拉沙漠</option>
+              <option value="🕌">🕌 杜拜/中東</option>
+            </optgroup>
+            <optgroup label="🏖️ 度假與主題 (Themes)">
+              <option value="🛫">🛫 航班</option>
+              <option value="🎒">🎒 自由行</option>
+              <option value="🏖️">🏖️ 海島渡假</option>
+              <option value="🚢">🚢 郵輪之旅</option>
+              <option value="🏕️">🏕️ 露營大自然</option>
+              <option value="🛍️">🛍️ 購物商圈</option>
+              <option value="🚗">🚗 自駕遊</option>
+            </optgroup>
+          </select>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
             <span style="font-size: 0.82rem; color: var(--text-muted); white-space: nowrap;">或自訂輸入任意 Emoji：</span>
             <input type="text" id="rename-trip-custom-emoji" class="form-control" style="width: 85px; text-align: center; font-size: 1.15rem; padding: 0.25rem 0.4rem;" maxlength="4" placeholder="請填寫" oninput="handleCustomTripEmoji(this.value, 'rename-trip')" />
           </div>
           <input type="hidden" id="rename-trip-emoji" value="🛫" />
-        </div>
-        <div class="form-group" style="margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--border-color);">
-          <label>調整分頁顯示順序</label>
-          <div style="display: flex; gap: 0.6rem; margin-top: 0.35rem;">
-            <button type="button" class="btn" style="flex: 1; padding: 0.45rem 0.6rem; font-size: 0.85rem;" onclick="moveTripRelative(-1)">⬅️ 往前移一位</button>
-            <button type="button" class="btn" style="flex: 1; padding: 0.45rem 0.6rem; font-size: 0.85rem;" onclick="moveTripRelative(1)">➡️ 往後移一位</button>
-          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -2887,15 +2843,25 @@
     }
 
     // Emoji Selection Helpers
-    function selectTripEmoji(btn, emoji) {
-      document.querySelectorAll('#add-trip-modal .emoji-opt-btn').forEach(b => b.classList.remove('active'));
-      if (btn) {
-        btn.classList.add('active');
+    function handleTripEmojiSelectChange(emoji, mode) {
+      if (mode === 'new-trip') {
+        document.getElementById('new-trip-emoji').value = emoji;
+        const custom = document.getElementById('new-trip-custom-emoji');
+        if (custom) custom.value = emoji;
       } else {
-        const match = Array.from(document.querySelectorAll('#add-trip-modal .emoji-opt-btn')).find(b => b.textContent.includes(emoji));
-        if (match) match.classList.add('active');
+        document.getElementById('rename-trip-emoji').value = emoji;
+        const custom = document.getElementById('rename-trip-custom-emoji');
+        if (custom) custom.value = emoji;
       }
+    }
+
+    function selectTripEmoji(btn, emoji) {
       document.getElementById('new-trip-emoji').value = emoji;
+      const select = document.getElementById('new-trip-emoji-select');
+      if (select) {
+        const hasOpt = Array.from(select.options).some(o => o.value === emoji);
+        select.value = hasOpt ? emoji : '';
+      }
       const customInput = document.getElementById('new-trip-custom-emoji');
       if (customInput && document.activeElement !== customInput) {
         customInput.value = emoji;
@@ -2903,14 +2869,12 @@
     }
 
     function selectRenameTripEmoji(btn, emoji) {
-      document.querySelectorAll('#rename-trip-emoji-group .emoji-opt-btn').forEach(b => b.classList.remove('active'));
-      if (btn) {
-        btn.classList.add('active');
-      } else {
-        const match = Array.from(document.querySelectorAll('#rename-trip-emoji-group .emoji-opt-btn')).find(b => b.textContent.includes(emoji));
-        if (match) match.classList.add('active');
-      }
       document.getElementById('rename-trip-emoji').value = emoji;
+      const select = document.getElementById('rename-trip-emoji-select');
+      if (select) {
+        const hasOpt = Array.from(select.options).some(o => o.value === emoji);
+        select.value = hasOpt ? emoji : '';
+      }
       const customInput = document.getElementById('rename-trip-custom-emoji');
       if (customInput && document.activeElement !== customInput) {
         customInput.value = emoji;
@@ -2921,9 +2885,19 @@
       const emoji = val.trim();
       if (!emoji) return;
       if (mode === 'new-trip') {
-        selectTripEmoji(null, emoji);
+        document.getElementById('new-trip-emoji').value = emoji;
+        const select = document.getElementById('new-trip-emoji-select');
+        if (select) {
+          const hasOpt = Array.from(select.options).some(o => o.value === emoji);
+          select.value = hasOpt ? emoji : '';
+        }
       } else {
-        selectRenameTripEmoji(null, emoji);
+        document.getElementById('rename-trip-emoji').value = emoji;
+        const select = document.getElementById('rename-trip-emoji-select');
+        if (select) {
+          const hasOpt = Array.from(select.options).some(o => o.value === emoji);
+          select.value = hasOpt ? emoji : '';
+        }
       }
     }
 
@@ -3169,6 +3143,26 @@
       return { spots: [], itinerary: [], customDays: [] };
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatOpeningHours(rawHours) {
+      if (!rawHours) return '';
+      let text = String(rawHours).trim();
+      text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n');
+      if (!text.includes('\n')) {
+        text = text.replace(/([^\n])(?:\s*[,;\uFF0C\uFF1B]?\s*)((?:\u661F\u671F|\u9031|\u5468)[\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D\u65E5\u5929]|(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b)/gi, '$1\n$2');
+      }
+      return text;
+    }
+
     // 2. View Switcher
     function switchMainView(viewName) {
       currentMainView = viewName;
@@ -3207,19 +3201,201 @@
     }
 
     // 3. Render Spots
+        // --- Scoped Dropdowns & Dynamic Filters for Active Trip ---
+    function pruneUnusedCustomItems() {
+      if (!appData || !Array.isArray(appData.spots)) return;
+      const activeCities = new Set();
+      const activeTypes = new Set();
+      appData.spots.forEach(s => {
+        const c = s['城市'] || s['\u57CE\u5E02'];
+        if (c && typeof c === 'string' && c.trim()) {
+          activeCities.add(c.trim());
+        }
+        const t = s['類型'] || s['\u985E\u578B'];
+        if (t && typeof t === 'string') {
+          t.split(',').forEach(item => {
+            const trimmed = item.trim();
+            if (trimmed) activeTypes.add(trimmed);
+          });
+        }
+      });
+      if (Array.isArray(appData.customCities)) {
+        appData.customCities = appData.customCities.filter(c => activeCities.has(c));
+      }
+      if (Array.isArray(appData.customTypes)) {
+        appData.customTypes = appData.customTypes.filter(t => activeTypes.has(t));
+      }
+    }
+
+    function getTripCities() {
+      pruneUnusedCustomItems();
+      const citySet = new Set();
+      if (appData && Array.isArray(appData.spots)) {
+        appData.spots.forEach(s => {
+          const c = s['城市'] || s['\u57CE\u5E02'];
+          if (c && typeof c === 'string' && c.trim()) {
+            citySet.add(c.trim());
+          }
+        });
+      }
+      return Array.from(citySet).sort();
+    }
+
+    function getTripTypes() {
+      pruneUnusedCustomItems();
+      const typeSet = new Set();
+      ['Sightseeing', 'Food', 'Shopping', 'Hotel', 'Museum'].forEach(t => typeSet.add(t));
+      if (appData && Array.isArray(appData.spots)) {
+        appData.spots.forEach(s => {
+          const t = s['類型'] || s['\u985E\u578B'];
+          if (t && typeof t === 'string') {
+            t.split(',').forEach(item => {
+              const trimmed = item.trim();
+              if (trimmed) typeSet.add(trimmed);
+            });
+          }
+        });
+      }
+      return Array.from(typeSet).sort();
+    }
+
+    function populateSpotModalSelects() {
+      const citySelect = document.getElementById('form-spot-city-select');
+      const cityInput = document.getElementById('form-spot-city');
+      if (citySelect) {
+        const cities = getTripCities();
+        let html = '<option value="">▼ 下拉選擇城市 (此分頁)</option>';
+        cities.forEach(c => {
+          html += '<option value="' + escapeHtml(c) + '">📍 ' + escapeHtml(c) + '</option>';
+        });
+        html += '<option value="__custom__">✏️ 自訂輸入新城市...</option>';
+        citySelect.innerHTML = html;
+        if (cityInput && cities.includes(cityInput.value.trim())) {
+          citySelect.value = cityInput.value.trim();
+        } else if (cityInput && cityInput.value.trim()) {
+          citySelect.value = '__custom__';
+        } else {
+          citySelect.value = '';
+        }
+      }
+
+      const typeSelect = document.getElementById('form-spot-type-select');
+      if (typeSelect) {
+        const types = getTripTypes();
+        let html = '<option value="">▼ 下拉選擇類型標籤 (可多次加入)</option>';
+        types.forEach(t => {
+          html += '<option value="' + escapeHtml(t) + '">🏷️ ' + escapeHtml(t) + '</option>';
+        });
+        html += '<option value="__custom__">✏️ 自訂手動輸入新類型...</option>';
+        typeSelect.innerHTML = html;
+        typeSelect.value = '';
+      }
+    }
+
+    function handleCitySelectChange(val) {
+      const input = document.getElementById('form-spot-city');
+      if (!input) return;
+      if (val === '__custom__') {
+        input.focus();
+        input.select();
+      } else if (val) {
+        input.value = val;
+      }
+    }
+
+    function handleTypeSelectChange(val) {
+      const input = document.getElementById('form-spot-type');
+      const select = document.getElementById('form-spot-type-select');
+      if (!input) return;
+      if (val === '__custom__') {
+        input.focus();
+        input.select();
+        if (select) select.value = '';
+        return;
+      }
+      if (!val) return;
+
+      const current = input.value.trim();
+      if (!current) {
+        input.value = val;
+      } else {
+        const existing = current.split(',').map(s => s.trim()).filter(Boolean);
+        if (!existing.includes(val)) {
+          existing.push(val);
+        }
+        input.value = existing.join(', ');
+      }
+      if (select) select.value = '';
+    }
+
+    function populateTypeFilter() {
+      const typeSelect = document.getElementById('spot-filter-type');
+      if (!typeSelect) return;
+      const currentVal = typeSelect.value;
+      
+      // 僅呈現景點清單中真正有資料的類型！
+      const activeTypes = new Set();
+      if (appData && Array.isArray(appData.spots)) {
+        appData.spots.forEach(s => {
+          const t = s['類型'] || s['\u985E\u578B'];
+          if (t && typeof t === 'string') {
+            t.split(',').forEach(item => {
+              const trimmed = item.trim();
+              if (trimmed) activeTypes.add(trimmed);
+            });
+          }
+        });
+      }
+
+      const typeLabels = {
+        'sightseeing': 'Sightseeing (景點)',
+        'food': 'Food (美食)',
+        'shopping': 'Shopping (購物)',
+        'hotel': 'Hotel (飯店)',
+        'museum': 'Museum (博物館)'
+      };
+
+      const sortedTypes = Array.from(activeTypes).sort();
+      let html = '<option value="">全部類型</option>';
+      sortedTypes.forEach(t => {
+        const label = typeLabels[t.toLowerCase()] || t;
+        html += '<option value="' + escapeHtml(t) + '">' + escapeHtml(label) + '</option>';
+      });
+      typeSelect.innerHTML = html;
+      if (currentVal && sortedTypes.some(t => t.toLowerCase() === currentVal.toLowerCase())) {
+        typeSelect.value = currentVal;
+      } else {
+        typeSelect.value = '';
+      }
+    }
+
     function populateCityFilter() {
       const citySelect = document.getElementById('spot-filter-city');
-      const cities = new Set();
-      appData.spots.forEach(s => {
-        if (s['城市']) cities.add(s['城市'].trim());
-      });
-      citySelect.innerHTML = '<option value="">全部城市/地區</option>';
-      cities.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
-        citySelect.appendChild(opt);
-      });
+      if (citySelect) {
+        const currentVal = citySelect.value;
+        // 僅呈現景點清單中真正有資料的城市！
+        const activeCities = new Set();
+        if (appData && Array.isArray(appData.spots)) {
+          appData.spots.forEach(s => {
+            const c = s['城市'] || s['\u57CE\u5E02'];
+            if (c && typeof c === 'string' && c.trim()) {
+              activeCities.add(c.trim());
+            }
+          });
+        }
+        const sortedCities = Array.from(activeCities).sort();
+        let html = '<option value="">全部城市/地區</option>';
+        sortedCities.forEach(c => {
+          html += '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+        });
+        citySelect.innerHTML = html;
+        if (currentVal && sortedCities.includes(currentVal)) {
+          citySelect.value = currentVal;
+        } else {
+          citySelect.value = '';
+        }
+      }
+      populateTypeFilter();
     }
 
     function renderSpots() {
@@ -3307,7 +3483,14 @@
 
             ${desc ? `<div class="spot-desc">${desc}</div>` : ''}
 
-            ${hours ? `<div class="spot-meta-row"><span>🕒</span><span>${hours.replace(/\\n/g, ' ')}</span></div>` : ''}
+            ${hours ? `
+              <div class="spot-meta-row spot-meta-hours">
+                <span class="spot-hours-label" style="flex-shrink:0; font-weight:600; color:var(--text-muted); font-size:0.8rem; margin-top:1px; white-space:nowrap;">營業時間</span>
+                <div class="spot-hours-list">
+                  ${formatOpeningHours(hours).split('\n').map(line => line.trim()).filter(Boolean).map(line => '<div class="spot-hours-item">' + escapeHtml(line) + '</div>').join('')}
+                </div>
+              </div>
+            ` : ''}
             ${address ? `<div class="spot-meta-row"><span>🏠</span><span>${address}</span></div>` : ''}
 
             <div class="spot-actions">
@@ -3711,12 +3894,13 @@
       document.getElementById('edit-spot-index').value = '-1';
       document.getElementById('form-spot-name').value = '';
       document.getElementById('form-spot-city').value = '';
-      document.getElementById('form-spot-type').value = 'Sightseeing';
+      document.getElementById('form-spot-type').value = '';
       document.getElementById('form-spot-address').value = '';
       document.getElementById('form-spot-hours').value = '';
       document.getElementById('form-spot-visited').value = 'No';
       document.getElementById('form-spot-desc').value = '';
       setSpotPhotoPreview('');
+      populateSpotModalSelects();
       document.getElementById('spot-modal').classList.add('active');
     }
 
@@ -3726,16 +3910,17 @@
         return;
       }
       const spot = appData.spots[idx];
-      document.getElementById('spot-modal-title').textContent = '✏️ 編輯景點：' + spot['Name'];
+      document.getElementById('spot-modal-title').textContent = '✏️ 編輯景點：' + (spot['Name'] || '');
       document.getElementById('edit-spot-index').value = idx;
       document.getElementById('form-spot-name').value = spot['Name'] || '';
-      document.getElementById('form-spot-city').value = spot['城市'] || '';
-      document.getElementById('form-spot-type').value = spot['類型'] || '';
-      document.getElementById('form-spot-address').value = spot['地址'] || '';
-      document.getElementById('form-spot-hours').value = spot['營業時間'] || '';
-      document.getElementById('form-spot-visited').value = spot['已拜訪'] || 'No';
-      document.getElementById('form-spot-desc').value = spot['描述'] || '';
-      setSpotPhotoPreview(spot['照片'] || '');
+      document.getElementById('form-spot-city').value = spot['城市'] || spot['\u57CE\u5E02'] || '';
+      document.getElementById('form-spot-type').value = spot['類型'] || spot['\u985E\u578B'] || '';
+      document.getElementById('form-spot-address').value = spot['地址'] || spot['\u5730\u5740'] || '';
+      document.getElementById('form-spot-hours').value = formatOpeningHours(spot['營業時間'] || spot['\u71DF\u696D\u6642\u9593'] || '');
+      document.getElementById('form-spot-visited').value = spot['已拜訪'] || spot['\u5DF2\u62DC\u8A2A'] || 'No';
+      document.getElementById('form-spot-desc').value = spot['描述'] || spot['\u63CF\u8FF0'] || '';
+      setSpotPhotoPreview(spot['照片'] || spot['\u7167\u7247'] || '');
+      populateSpotModalSelects();
       document.getElementById('spot-modal').classList.add('active');
     }
 
@@ -3762,11 +3947,35 @@
         '城市': document.getElementById('form-spot-city').value.trim(),
         '類型': document.getElementById('form-spot-type').value.trim(),
         '地址': document.getElementById('form-spot-address').value.trim(),
-        '營業時間': document.getElementById('form-spot-hours').value.trim(),
+        '營業時間': formatOpeningHours(document.getElementById('form-spot-hours').value),
         '已拜訪': document.getElementById('form-spot-visited').value,
         '描述': document.getElementById('form-spot-desc').value.trim(),
         '照片': photoVal
       };
+
+      
+      // Save newly entered custom city and types into active trip (scoped to this trip)
+      const enteredCity = document.getElementById('form-spot-city').value.trim();
+      if (enteredCity) {
+        if (!Array.isArray(appData.customCities)) appData.customCities = [];
+        if (!appData.customCities.includes(enteredCity)) {
+          appData.customCities.push(enteredCity);
+        }
+      }
+
+      const enteredType = document.getElementById('form-spot-type').value.trim();
+      if (enteredType) {
+        if (!Array.isArray(appData.customTypes)) appData.customTypes = [];
+        enteredType.split(',').forEach(t => {
+          const trimmed = t.trim();
+          if (trimmed && !appData.customTypes.includes(trimmed)) {
+            appData.customTypes.push(trimmed);
+          }
+        });
+      }
+
+      populateCityFilter();
+      populateSpotModalSelects();
 
       if (idx >= 0) {
         appData.spots[idx] = item;
@@ -3791,6 +4000,7 @@
       const name = appData.spots[idx]['Name'];
       if (confirm(`確定要刪除「${name}」嗎？`)) {
         appData.spots.splice(idx, 1);
+        pruneUnusedCustomItems();
         saveToStorageSilent();
         renderTripTabs();
         populateCityFilter();
@@ -4014,6 +4224,30 @@
         'Google導航': document.getElementById('form-itin-nav').value.trim(),
         '筆記': document.getElementById('form-itin-notes').value.trim()
       };
+
+      
+      // Save newly entered custom city and types into active trip (scoped to this trip)
+      const enteredCity = document.getElementById('form-spot-city').value.trim();
+      if (enteredCity) {
+        if (!Array.isArray(appData.customCities)) appData.customCities = [];
+        if (!appData.customCities.includes(enteredCity)) {
+          appData.customCities.push(enteredCity);
+        }
+      }
+
+      const enteredType = document.getElementById('form-spot-type').value.trim();
+      if (enteredType) {
+        if (!Array.isArray(appData.customTypes)) appData.customTypes = [];
+        enteredType.split(',').forEach(t => {
+          const trimmed = t.trim();
+          if (trimmed && !appData.customTypes.includes(trimmed)) {
+            appData.customTypes.push(trimmed);
+          }
+        });
+      }
+
+      populateCityFilter();
+      populateSpotModalSelects();
 
       if (idx >= 0) {
         appData.itinerary[idx] = item;
@@ -4828,11 +5062,10 @@
       document.getElementById('new-trip-name').value = '';
       delete document.getElementById('new-trip-name').dataset.autoFilled;
       document.getElementById('new-trip-emoji').value = '🗼';
+      const selectAdd = document.getElementById('new-trip-emoji-select');
+      if (selectAdd) selectAdd.value = '🗼';
       const customAddInput = document.getElementById('new-trip-custom-emoji');
       if (customAddInput) customAddInput.value = '🗼';
-      document.querySelectorAll('#add-trip-modal .emoji-opt-btn').forEach((b, idx) => {
-        b.classList.toggle('active', idx === 0);
-      });
       document.getElementById('new-trip-days').value = '5';
 
       populateCopyTripOptions();
@@ -5010,15 +5243,17 @@
       const targetTrip = tripManager.trips.find(t => t.id === tripId);
       if (!targetTrip) return;
 
+      const icon = targetTrip.icon || '🛫';
       document.getElementById('rename-trip-id').value = tripId;
       document.getElementById('rename-trip-name').value = targetTrip.name || '';
-      document.getElementById('rename-trip-emoji').value = targetTrip.icon || '🛫';
+      document.getElementById('rename-trip-emoji').value = icon;
+      const selectRename = document.getElementById('rename-trip-emoji-select');
+      if (selectRename) {
+        const hasOpt = Array.from(selectRename.options).some(o => o.value === icon);
+        selectRename.value = hasOpt ? icon : '';
+      }
       const customRenameInput = document.getElementById('rename-trip-custom-emoji');
-      if (customRenameInput) customRenameInput.value = targetTrip.icon || '🛫';
-
-      document.querySelectorAll('#rename-trip-emoji-group .emoji-opt-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.trim().startsWith(targetTrip.icon));
-      });
+      if (customRenameInput) customRenameInput.value = icon;
 
       document.getElementById('rename-trip-modal').classList.add('active');
       setTimeout(() => {
