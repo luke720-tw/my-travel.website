@@ -1,6 +1,6 @@
 {
-  "name": "Luke 旅遊指南",
-  "short_name": "旅遊指南",
+  "name": "Luke旅遊紀錄",
+  "short_name": "Luke旅遊紀錄",
   "description": "智慧旅遊行程規劃與觀光景點指南",
   "start_url": "./index.html",
   "scope": "./",
