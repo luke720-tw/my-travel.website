@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
@@ -3901,24 +3901,31 @@
             initialData = JSON.parse(legacyCached);
           } catch (e) {}
         }
-        if (!initialData || !Array.isArray(initialData.spots) || initialData.spots.length === 0) {
-          initialData = getDefaultData();
-        }
-        if (!Array.isArray(initialData.customDays)) initialData.customDays = [];
+        if (window.NOTION_DATA && Array.isArray(window.NOTION_DATA.trips) && window.NOTION_DATA.trips.length > 0) {
+          tripManager = {
+            activeTripId: window.NOTION_DATA.activeTripId || window.NOTION_DATA.trips[0].id,
+            trips: JSON.parse(JSON.stringify(window.NOTION_DATA.trips))
+          };
+        } else {
+          if (!initialData || !Array.isArray(initialData.spots) || initialData.spots.length === 0) {
+            initialData = getDefaultData();
+          }
+          if (!Array.isArray(initialData.customDays)) initialData.customDays = [];
 
-        tripManager = {
-          activeTripId: 'osaka',
-          trips: [
-            {
-              id: 'osaka',
-              name: '日本大阪',
-              icon: '🛫',
-              spots: initialData.spots || [],
-              itinerary: initialData.itinerary || [],
-              customDays: initialData.customDays || []
-            }
-          ]
-        };
+          tripManager = {
+            activeTripId: 'osaka',
+            trips: [
+              {
+                id: 'osaka',
+                name: '\u65e5\u672c\u5927\u962a',
+                icon: '\ud83c\udfef',
+                spots: initialData.spots || [],
+                itinerary: initialData.itinerary || [],
+                customDays: initialData.customDays || []
+              }
+            ]
+          };
+        }
       } else {
         tripManager = loadedTrips;
       }
@@ -3947,6 +3954,14 @@
     function getDefaultData() {
       if (window.NOTION_DATA) {
         const data = JSON.parse(JSON.stringify(window.NOTION_DATA));
+        if (Array.isArray(data.trips) && data.trips.length > 0) {
+          const active = data.trips.find(function(t) { return t.id === data.activeTripId; }) || data.trips[0];
+          return {
+            spots: active.spots || [],
+            itinerary: active.itinerary || [],
+            customDays: active.customDays || []
+          };
+        }
         if (!data.customDays) data.customDays = [];
         return data;
       }
