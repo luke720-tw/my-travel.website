@@ -13,6 +13,15 @@
   <meta property="og:type" content="website">
   <title>Luke 旅遊指南</title>
   
+  <!-- iOS PWA & Web App Settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Luke 旅遊指南">
+  <link rel="apple-touch-icon" href="images.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images.png">
+  <link rel="icon" type="image/png" href="images.png">
+  <link rel="manifest" href="manifest.json">
+  
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3985,6 +3994,7 @@
         showToast('新景點已新增！');
       }
 
+      pruneUnusedCustomItems();
       saveToStorageSilent();
       renderTripTabs();
       populateCityFilter();
@@ -6171,6 +6181,20 @@
       updateSidebarOverlay();
       window.scrollTo(0, 0);
     });
+
+    // 註冊 PWA Service Worker (支援離線與主畫面獨立運行)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => {
+            console.log('PWA Service Worker 已成功註冊:', reg.scope);
+          })
+          .catch((err) => {
+            // 本地 file:// 協定時瀏覽器安全原則會略過，不影響正常使用
+            console.log('PWA Service Worker (若為 file:// 協定略過註冊):', err.message);
+          });
+      });
+    }
   </script>
 </body>
 </html>
