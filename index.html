@@ -23,6 +23,24 @@
   <link rel="apple-touch-icon" sizes="512x512" href="./images.png">
   <link rel="icon" type="image/png" href="./apple-touch-icon.png">
   <link rel="manifest" href="./manifest.json">
+
+  <!-- Dynamic Exact Viewport Height for iOS PWA Standalone Mode -->
+  <script>
+    (function() {
+      function syncAppHeight() {
+        var h = window.innerHeight;
+        document.documentElement.style.setProperty('--app-height', h + 'px');
+      }
+      syncAppHeight();
+      window.addEventListener('resize', syncAppHeight);
+      window.addEventListener('orientationchange', function() {
+        setTimeout(syncAppHeight, 100);
+      });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', syncAppHeight);
+      }
+    })();
+  </script>
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -90,7 +108,7 @@
 
     html {
       height: 100%;
-      height: -webkit-fill-available;
+      height: var(--app-height, 100vh);
       overflow: hidden;
       overscroll-behavior: none;
       -webkit-text-size-adjust: 100%;
@@ -102,13 +120,14 @@
       color: var(--text-main);
       width: 100%;
       height: 100%;
-      height: -webkit-fill-available;
+      height: var(--app-height, 100vh);
       display: flex;
       flex-direction: column;
       overflow: hidden;
       overscroll-behavior: none;
       transition: background-color 0.25s ease;
       padding: 0;
+      margin: 0;
     }
 
     /* Top Navigation Header */
@@ -720,11 +739,14 @@
       flex: 1;
       width: 100%;
       min-width: 0;
+      height: 100%;
       background: var(--bg-base);
       display: flex;
       flex-direction: column;
       position: relative;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
     }
 
     .view-section {
@@ -1706,7 +1728,10 @@
         pointer-events: none !important;
       }
       .workspace-wrapper {
-        padding: 0.85rem 0.85rem calc(3rem + env(safe-area-inset-bottom, 20px)) 0.85rem;
+        padding: 0.85rem 0.85rem max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.6rem)) 0.85rem;
+      }
+      .spots-grid {
+        margin-bottom: 0.75rem;
       }
     }
 
