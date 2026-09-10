@@ -5,6 +5,7 @@ const STATIC_ASSETS = [
   './index.html',
   './notion_data.js',
   './images.png',
+  './apple-touch-icon.png',
   './manifest.json'
 ];
 
