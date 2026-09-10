@@ -1809,6 +1809,403 @@
     body.read-only-mode .visited-toggle {
       cursor: pointer;
     }
+  
+    /* ==========================================================================
+       旅伴公開投票、評論與身分設定樣式 (PC / 手機 / Web App 支援)
+       ========================================================================== */
+    /* 導航列旅伴身分指示鈕 */
+    #companion-user-badge-btn {
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-color: rgba(99, 102, 241, 0.4);
+      color: var(--accent);
+      background: rgba(99, 102, 241, 0.1);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    #companion-user-badge-btn:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    #companion-user-badge-btn.has-user {
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+    #companion-user-badge-btn.has-user:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+    }
+
+    /* 景點卡片旅伴互動區 */
+    .spot-social-section {
+      margin-top: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* 投票列 */
+    .spot-vote-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    /* 投票膠囊按鈕 */
+    .btn-vote-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.32rem 0.65rem;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-hover);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+    .btn-vote-pill:hover {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      transform: translateY(-1px);
+    }
+    .btn-vote-pill:active {
+      transform: scale(0.96);
+    }
+    .btn-vote-pill.active-up {
+      background: rgba(16, 185, 129, 0.16) !important;
+      border-color: #10b981 !important;
+      color: #10b981 !important;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+    }
+    .btn-vote-pill.active-down {
+      background: rgba(239, 68, 68, 0.16) !important;
+      border-color: #ef4444 !important;
+      color: #ef4444 !important;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
+    }
+    .btn-vote-pill .vote-count {
+      font-size: 0.72rem;
+      padding: 0.08rem 0.35rem;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      font-weight: 700;
+      min-width: 14px;
+      text-align: center;
+    }
+    .btn-vote-pill.active-up .vote-count {
+      background: #10b981;
+      border-color: #10b981;
+      color: #ffffff;
+    }
+    .btn-vote-pill.active-down .vote-count {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    /* 討論與名單展開按鈕 */
+    .btn-social-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.32rem 0.55rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      user-select: none;
+      outline: none;
+    }
+    .btn-social-toggle:hover {
+      color: var(--accent);
+      background: var(--bg-hover);
+      border-color: var(--border-color);
+    }
+    .btn-social-toggle.active {
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .btn-social-toggle.toggle-comments {
+      margin-left: auto;
+    }
+    .comment-count-badge {
+      font-size: 0.7rem;
+      padding: 0.06rem 0.32rem;
+      border-radius: 8px;
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .btn-social-toggle.active .comment-count-badge {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    /* 投票名單展開抽屜 */
+    .spot-voters-panel {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.78rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      animation: fadeInSocial 0.2s ease-out;
+    }
+    .voters-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .voters-group-title {
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .voters-chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      flex: 1;
+    }
+    .voter-chip {
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .voter-chip.up {
+      background: rgba(16, 185, 129, 0.14);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .voter-chip.down {
+      background: rgba(239, 68, 68, 0.14);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+    .voter-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 0.72rem;
+    }
+
+    /* 評論區展開面板 */
+    .spot-comments-panel {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      animation: fadeInSocial 0.2s ease-out;
+    }
+    .spot-comments-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+    .spot-comments-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .spot-comments-list::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    .comment-empty-hint {
+      text-align: center;
+      padding: 0.75rem 0.4rem;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+    .comment-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .comment-item-header {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      font-size: 0.74rem;
+    }
+    .comment-item-author {
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .comment-item-time {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+    }
+    .comment-edited-tag {
+      color: #f59e0b;
+      font-size: 0.68rem;
+      font-weight: 600;
+      background: rgba(245, 158, 11, 0.12);
+      padding: 0.05rem 0.3rem;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .comment-item-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .btn-comment-opt {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.12rem 0.3rem;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+    .btn-comment-opt:hover {
+      color: var(--accent);
+      background: var(--bg-hover);
+    }
+    .btn-comment-opt.text-danger:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+    .comment-item-body {
+      font-size: 0.82rem;
+      color: var(--text-main);
+      line-height: 1.45;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    /* 行內編輯評論 */
+    .comment-inline-edit {
+      margin-top: 0.35rem;
+    }
+    .comment-edit-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 0.82rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 52px;
+      outline: none;
+    }
+    .comment-edit-btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.4rem;
+      margin-top: 0.35rem;
+    }
+    /* 未投票鎖定提示 */
+    .comment-locked-banner {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px dashed rgba(245, 158, 11, 0.45);
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.78rem;
+      color: #f59e0b;
+      text-align: center;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+    /* 留言輸入區 */
+    .comment-compose-wrap {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .comment-input {
+      flex: 1;
+      padding: 0.42rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .comment-input:focus {
+      border-color: var(--accent);
+    }
+    .btn-comment-send {
+      padding: 0.42rem 0.75rem;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    @keyframes fadeInSocial {
+      from { opacity: 0; transform: translateY(-3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 手機與 Web App 響應式微調 */
+    @media (max-width: 768px) {
+      #companion-user-badge-btn {
+        padding: 0.28rem 0.42rem;
+        font-size: 0.72rem;
+        max-width: 90px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .spot-vote-bar {
+        gap: 0.35rem;
+      }
+      .btn-vote-pill {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.76rem;
+      }
+      .comment-input {
+        font-size: 16px; /* 防止 iOS Safari 自動縮放 */
+      }
+      .comment-edit-textarea {
+        font-size: 16px;
+      }
+    }
+
   </style>
 </head>
 <body data-theme="dark">
@@ -1849,12 +2246,17 @@
 
     <div class="header-actions">
       <!-- Permission Lock / Unlock Button -->
+      <button class="btn" id="companion-user-badge-btn" onclick="openCompanionUserModal()" title="&#26053;&#20276;&#31805;&#21040; / &#20462;&#25913;&#23567;&#21517;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2.5px; margin-right:4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span id="companion-user-name-label">&#26053;&#20276;&#31805;&#21040;</span>
+      </button>
+
       <button class="btn" id="perm-badge-btn" onclick="handlePermissionBadgeClick()" title="權限狀態" style="font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
         <span id="perm-badge-icon">🔒</span>
         <span id="perm-badge-label">唯讀模式</span>
       </button>
 
-      <span id="app-version-badge" style="font-size: 0.68rem; padding: 0.2rem 0.38rem; background: rgba(56, 189, 248, 0.15); color: var(--accent); border-radius: 6px; font-weight: 700; font-family: monospace; white-space: nowrap;">v4.1</span>
+      <span id="app-version-badge" style="font-size: 0.68rem; padding: 0.2rem 0.38rem; background: rgba(56, 189, 248, 0.15); color: var(--accent); border-radius: 6px; font-weight: 700; font-family: monospace; white-space: nowrap;">v4.2</span>
 
       <button class="btn" onclick="openCloudSyncModal()" id="cloud-sync-header-btn" style="border-color: rgba(56, 189, 248, 0.4); color: var(--accent); background: rgba(56, 189, 248, 0.08); font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem;" title="即時雲端同步狀態 (支援電腦與手機雙向即時連線)">
         <span id="sync-status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block; box-shadow: 0 0 8px #f59e0b; transition: all 0.3s;"></span>
@@ -1913,7 +2315,7 @@
             <button class="btn" id="theme-btn" title="切換深色/淺色模式" style="width: 38px; height: 38px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;">
               <span id="theme-icon">☀️</span>
             </button>
-            <span style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.7; font-family: monospace;">v4.1</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.7; font-family: monospace;">v4.2</span>
           </div>
         </div>
       </nav>
@@ -2561,6 +2963,33 @@
   </div>
 
   <!-- Toast Notification -->
+    <!-- Companion User Sign-in Modal -->
+  <div class="modal-overlay" id="companion-user-modal">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-3px; margin-right:6px; color:var(--accent);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>&#26053;&#20276;&#31805;&#21040;&#33287;&#36523;&#20998;&#35373;&#23450;</h3>
+        <button class="modal-close" onclick="closeCompanionUserModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1rem;">
+          &#27489;&#36814;&#21152;&#20837;&#34892;&#31243;&#65281;&#35531;&#36664;&#20837;&#20320;&#30340;&#23567;&#21517;&#25110;&#26288;&#31281;&#65288;&#20363;&#22914;&#65306;&#23567;&#26126;&#12289;Luke&#65289;&#65292;&#26041;&#20415;&#22823;&#23478;&#36776;&#35672;&#20320;&#30340;&#20844;&#38283;&#25237;&#31080;&#33287;&#35342;&#35542;&#30041;&#35328;&#12290;
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="companion-nickname-input">&#20320;&#30340;&#23567;&#21517; / &#26288;&#31281;</label>
+          <input type="text" class="form-control" id="companion-nickname-input" placeholder="&#20363;&#22914;&#65306;&#23567;&#26126;&#12289;Amy&#12289;Luke" maxlength="15" onkeydown="if(event.key==='Enter') confirmCompanionUser()">
+        </div>
+        <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.45rem; background: var(--bg-hover); padding: 0.55rem 0.75rem; border-radius: 8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent); flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>&#28961;&#38920;&#24115;&#34399;&#23494;&#30908;&#65292;&#31995;&#32113;&#26371;&#33258;&#21205;&#22312;&#27492;&#35037;&#32622;&#32129;&#23450;&#23560;&#23660;&#35672;&#21029;&#30908;&#12290;</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeCompanionUserModal()">&#21462;&#28040;</button>
+        <button class="btn btn-primary" onclick="confirmCompanionUser()">&#30908;&#35469;&#21152;&#20837;</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast">
     <span>✅</span>
     <span id="toast-message">儲存成功！</span>
@@ -2569,6 +2998,302 @@
   <!-- Main JavaScript Logic -->
   <script>
     // App State
+        // ==========================================================================
+    // Companion Public Voting, Comments & Identity System (Pure ASCII Safe)
+    // ==========================================================================
+    const COMPANION_USER_KEY = 'TRAVEL_COMPANION_USER_V1';
+    let spotVotersOpen = {};
+    let spotCommentsOpen = {};
+    let pendingCompanionCallback = null;
+
+    function getCompanionUser() {
+      try {
+        const raw = localStorage.getItem(COMPANION_USER_KEY);
+        if (raw) {
+          const user = JSON.parse(raw);
+          if (user && user.id && user.name) return user;
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function saveCompanionUser(name) {
+      if (!name || !name.trim()) return null;
+      let user = getCompanionUser();
+      if (!user) {
+        const newId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+          ? crypto.randomUUID()
+          : ('dev_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9));
+        user = { id: newId, name: name.trim() };
+      } else {
+        user.name = name.trim();
+      }
+      try {
+        localStorage.setItem(COMPANION_USER_KEY, JSON.stringify(user));
+      } catch (e) {}
+      updateCompanionHeaderBadge();
+      return user;
+    }
+
+    function updateCompanionHeaderBadge() {
+      const labelEl = document.getElementById('companion-user-name-label');
+      const btnEl = document.getElementById('companion-user-badge-btn');
+      if (!labelEl || !btnEl) return;
+      const user = getCompanionUser();
+      if (user) {
+        labelEl.textContent = user.name;
+        btnEl.title = '\u65C5\u4F34\u8EAB\u5206\uFF1A' + user.name + ' (\u9EDE\u64CA\u4FEE\u6539\u5C0F\u540D)';
+        btnEl.classList.add('has-user');
+      } else {
+        labelEl.textContent = '\u65C5\u4F34\u7C3D\u5230';
+        btnEl.title = '\u9EDE\u64CA\u8A2D\u5B9A\u4F60\u7684\u65C5\u4F34\u66B1\u7A31';
+        btnEl.classList.remove('has-user');
+      }
+    }
+
+    function ensureCompanionUser(callback) {
+      const user = getCompanionUser();
+      if (user) {
+        if (callback) callback(user);
+        return true;
+      }
+      pendingCompanionCallback = callback || null;
+      openCompanionUserModal();
+      return false;
+    }
+
+    function openCompanionUserModal() {
+      const modal = document.getElementById('companion-user-modal');
+      const input = document.getElementById('companion-nickname-input');
+      const user = getCompanionUser();
+      if (input) {
+        input.value = user ? user.name : '';
+      }
+      if (modal) {
+        modal.classList.add('active');
+        setTimeout(() => { if (input) input.focus(); }, 150);
+      }
+    }
+
+    function closeCompanionUserModal() {
+      const modal = document.getElementById('companion-user-modal');
+      if (modal) modal.classList.remove('active');
+      pendingCompanionCallback = null;
+    }
+
+    function confirmCompanionUser() {
+      const input = document.getElementById('companion-nickname-input');
+      const name = input ? input.value.trim() : '';
+      if (!name) {
+        showToast('\u8ACB\u8F38\u5165\u4F60\u7684\u5C0F\u540D\u6216\u66B1\u7A31\uFF01');
+        if (input) input.focus();
+        return;
+      }
+      const user = saveCompanionUser(name);
+      closeCompanionUserModal();
+      showToast('\u6B61\u8FCE ' + user.name + ' \u52A0\u5165\u884C\u7A0B\uFF01');
+      renderSpots();
+      if (pendingCompanionCallback) {
+        const cb = pendingCompanionCallback;
+        pendingCompanionCallback = null;
+        cb(user);
+      }
+    }
+
+    function formatCommentTime(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return '';
+      const m = (d.getMonth() + 1).toString().padStart(2, '0');
+      const day = d.getDate().toString().padStart(2, '0');
+      const h = d.getHours().toString().padStart(2, '0');
+      const min = d.getMinutes().toString().padStart(2, '0');
+      return `${m}/${day} ${h}:${min}`;
+    }
+
+    function toggleSpotVote(spotIdx, type) {
+      ensureCompanionUser((user) => {
+        const spot = appData.spots[spotIdx];
+        if (!spot) return;
+        if (!spot.votes || typeof spot.votes !== 'object') spot.votes = {};
+
+        const currentVote = spot.votes[user.id];
+        if (currentVote && currentVote.type === type) {
+          delete spot.votes[user.id];
+          showToast('\u5DF2\u53D6\u6D88\u6295\u7968');
+        } else {
+          spot.votes[user.id] = {
+            name: user.name,
+            type: type,
+            time: Date.now()
+          };
+          showToast(type === 'up' ? '\u5DF2\u6A19\u8A18\u60F3\u53BB\uFF01' : '\u5DF2\u6A19\u8A18\u6C92\u8208\u8DA3');
+        }
+
+        syncSocialChanges();
+        renderSpots();
+      });
+    }
+
+    function toggleVotersList(spotIdx) {
+      spotVotersOpen[spotIdx] = !spotVotersOpen[spotIdx];
+      renderSpots();
+    }
+
+    function toggleCommentsList(spotIdx) {
+      spotCommentsOpen[spotIdx] = !spotCommentsOpen[spotIdx];
+      renderSpots();
+    }
+
+    function submitSpotComment(spotIdx) {
+      ensureCompanionUser((user) => {
+        const spot = appData.spots[spotIdx];
+        if (!spot) return;
+
+        const userVote = spot.votes && spot.votes[user.id] ? spot.votes[user.id].type : null;
+        if (!userVote) {
+          showToast('\u8ACB\u5148\u65BC\u4E0A\u65B9\u5B8C\u6210\u6295\u7968\uFF08\u60F3\u53BB / \u6C92\u8208\u8DA3\uFF09\uFF0C\u5373\u53EF\u7559\u8A00\uFF01');
+          return;
+        }
+
+        const input = document.getElementById('comment-input-' + spotIdx);
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) {
+          showToast('\u8ACB\u8F38\u5165\u7559\u8A00\u5167\u5BB9\uFF01');
+          input.focus();
+          return;
+        }
+
+        if (!Array.isArray(spot.comments)) {
+          spot.comments = Object.values(spot.comments || {});
+        }
+
+        const newComment = {
+          id: 'c_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+          deviceId: user.id,
+          name: user.name,
+          text: text,
+          createdAt: Date.now(),
+          isEdited: false,
+          editedAt: null
+        };
+
+        spot.comments.push(newComment);
+        input.value = '';
+
+        spotCommentsOpen[spotIdx] = true;
+        syncSocialChanges();
+        renderSpots();
+        showToast('\u7559\u8A00\u5DF2\u767C\u5E03\uFF01');
+      });
+    }
+
+    function startEditComment(spotIdx, commentId) {
+      const user = getCompanionUser();
+      if (!user) return;
+      const spot = appData.spots[spotIdx];
+      if (!spot || !Array.isArray(spot.comments)) return;
+      const comment = spot.comments.find(c => c && c.id === commentId);
+      if (!comment || comment.deviceId !== user.id) {
+        showToast('\u53EA\u6709\u672C\u4EBA\u53EF\u4EE5\u7DE8\u8F2F\u6B64\u7559\u8A00');
+        return;
+      }
+
+      const bodyEl = document.getElementById('comment-body-' + commentId);
+      const editWrap = document.getElementById('comment-inline-edit-' + commentId);
+      const textarea = document.getElementById('comment-edit-text-' + commentId);
+      if (bodyEl) bodyEl.style.display = 'none';
+      if (editWrap) editWrap.style.display = 'block';
+      if (textarea) {
+        textarea.value = comment.text;
+        textarea.focus();
+      }
+    }
+
+    function cancelEditComment(commentId) {
+      const bodyEl = document.getElementById('comment-body-' + commentId);
+      const editWrap = document.getElementById('comment-inline-edit-' + commentId);
+      if (bodyEl) bodyEl.style.display = 'block';
+      if (editWrap) editWrap.style.display = 'none';
+    }
+
+    function saveEditComment(spotIdx, commentId) {
+      const user = getCompanionUser();
+      if (!user) return;
+      const spot = appData.spots[spotIdx];
+      if (!spot || !Array.isArray(spot.comments)) return;
+      const comment = spot.comments.find(c => c && c.id === commentId);
+      if (!comment || comment.deviceId !== user.id) {
+        showToast('\u53EA\u6709\u672C\u4EBA\u53EF\u4EE5\u7DE8\u8F2F\u6B64\u7559\u8A00');
+        return;
+      }
+
+      const textarea = document.getElementById('comment-edit-text-' + commentId);
+      if (!textarea) return;
+      const newText = textarea.value.trim();
+      if (!newText) {
+        showToast('\u7559\u8A00\u5167\u5BB9\u4E0D\u80FD\u70BA\u7A7A\uFF01');
+        textarea.focus();
+        return;
+      }
+
+      comment.text = newText;
+      comment.isEdited = true;
+      comment.editedAt = Date.now();
+      comment.name = user.name;
+
+      spotCommentsOpen[spotIdx] = true;
+      syncSocialChanges();
+      renderSpots();
+      showToast('\u7559\u8A00\u5DF2\u66F4\u65B0\uFF01');
+    }
+
+    function deleteSpotComment(spotIdx, commentId) {
+      const user = getCompanionUser();
+      if (!user) return;
+      const spot = appData.spots[spotIdx];
+      if (!spot || !Array.isArray(spot.comments)) return;
+      const commentIdx = spot.comments.findIndex(c => c && c.id === commentId);
+      if (commentIdx === -1) return;
+      const comment = spot.comments[commentIdx];
+      if (comment.deviceId !== user.id && !isEditUnlocked()) {
+        showToast('\u53EA\u6709\u672C\u4EBA\u53EF\u4EE5\u522A\u9664\u6B64\u7559\u8A00');
+        return;
+      }
+
+      if (!confirm('\u78BA\u5B9A\u8981\u522A\u9664\u9019\u5247\u7559\u8A00\u55CE\uFF1F')) return;
+
+      spot.comments.splice(commentIdx, 1);
+      spotCommentsOpen[spotIdx] = true;
+      syncSocialChanges();
+      renderSpots();
+      showToast('\u7559\u8A00\u5DF2\u522A\u9664');
+    }
+
+    function syncSocialChanges() {
+      const currentTrip = tripManager.trips.find(t => t.id === tripManager.activeTripId);
+      if (currentTrip) {
+        currentTrip.spots = appData.spots;
+        currentTrip.itinerary = appData.itinerary;
+        currentTrip.customDays = appData.customDays || [];
+      }
+
+      try {
+        localStorage.setItem(TRIPS_STORAGE_KEY, JSON.stringify(tripManager));
+      } catch (err) {
+        console.warn('localStorage TRIPS error:', err);
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (err) {
+        console.warn('localStorage appData error:', err);
+      }
+
+      schedulePushToFirebase();
+    }
+
+
     const STORAGE_KEY = 'OSAKA_TRAVEL_DATA_V1';
     const TRIPS_STORAGE_KEY = 'TRAVEL_TRIPS_DATA_V2';
     const CLOUD_SYNC_KEY_NAME = 'TRAVEL_CLOUD_SYNC_ROOM_KEY';
@@ -2713,7 +3438,12 @@
           id: trip.id || ('trip_' + Math.random().toString(36).substring(2, 8)),
           name: trip.name || '旅程',
           icon: trip.icon || '🛫',
-          spots: Array.isArray(trip.spots) ? trip.spots : Object.values(trip.spots || {}),
+          spots: (Array.isArray(trip.spots) ? trip.spots : Object.values(trip.spots || {})).map(s => {
+            if (!s) return s;
+            if (!s.votes || typeof s.votes !== 'object') s.votes = {};
+            if (!Array.isArray(s.comments)) s.comments = Object.values(s.comments || {});
+            return s;
+          }),
           itinerary: Array.isArray(trip.itinerary) ? trip.itinerary : Object.values(trip.itinerary || {}),
           customDays: Array.isArray(trip.customDays) ? trip.customDays : Object.values(trip.customDays || [])
         };
@@ -3549,6 +4279,132 @@
           });
         }
 
+                // Social / Voting / Comments computation
+        const currentUser = getCompanionUser();
+        const currentUserId = currentUser ? currentUser.id : null;
+        const votes = (spot.votes && typeof spot.votes === 'object') ? spot.votes : {};
+        const voteEntries = Object.entries(votes);
+        const upVotes = voteEntries.filter(([k, v]) => v && v.type === 'up').map(([k, v]) => v);
+        const downVotes = voteEntries.filter(([k, v]) => v && v.type === 'down').map(([k, v]) => v);
+        const myVote = (currentUserId && votes[currentUserId]) ? votes[currentUserId].type : null;
+        const totalVotes = upVotes.length + downVotes.length;
+
+        const rawComments = spot.comments ? (Array.isArray(spot.comments) ? spot.comments : Object.values(spot.comments)) : [];
+        const comments = rawComments.filter(Boolean);
+
+        const isVotersOpen = !!spotVotersOpen[idx];
+        const isCommentsOpen = !!spotCommentsOpen[idx];
+
+        let votersDrawerHtml = '';
+        if (isVotersOpen) {
+          const upListStr = upVotes.map(v => `<span class="voter-chip up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg> ${escapeHtml(v.name || '&#26053;&#20276;')}</span>`).join('') || '<span class="voter-empty">&#26283;&#28961;</span>';
+          const downListStr = downVotes.map(v => `<span class="voter-chip down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg> ${escapeHtml(v.name || '&#26053;&#20276;')}</span>`).join('') || '<span class="voter-empty">&#26283;&#28961;</span>';
+          votersDrawerHtml = `
+            <div class="spot-voters-panel">
+              <div class="voters-group">
+                <span class="voters-group-title">&#24819;&#21435; (${upVotes.length})&#65306;</span>
+                <div class="voters-chips-wrap">${upListStr}</div>
+              </div>
+              <div class="voters-group">
+                <span class="voters-group-title">&#27794;&#33288;&#36259; (${downVotes.length})&#65306;</span>
+                <div class="voters-chips-wrap">${downListStr}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        let commentsDrawerHtml = '';
+        if (isCommentsOpen) {
+          let commentsItemsHtml = '';
+          if (comments.length === 0) {
+            commentsItemsHtml = `<div class="comment-empty-hint">&#23578;&#28961;&#35342;&#35542;&#65292;&#25104;&#28858;&#31532;&#19968;&#20491;&#30041;&#35328;&#30340;&#26053;&#20276;&#21543;&#65281;</div>`;
+          } else {
+            commentsItemsHtml = comments.map(c => {
+              const isMyComment = currentUserId && (c.deviceId === currentUserId);
+              const timeStr = formatCommentTime(c.createdAt);
+              const editedStr = c.isEdited ? `<span class="comment-edited-tag" title="&#26368;&#24460;&#32232;&#36655;&#65306;${formatCommentTime(c.editedAt)}">(&#24050;&#32232;&#36655; ${formatCommentTime(c.editedAt)})</span>` : '';
+              return `
+                <div class="comment-item" id="comment-item-${c.id}">
+                  <div class="comment-item-header">
+                    <span class="comment-item-author"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>${escapeHtml(c.name || '&#26053;&#20276;')}</span>
+                    <span class="comment-item-time">${timeStr}</span>
+                    ${editedStr}
+                    ${isMyComment ? `
+                      <div class="comment-item-actions">
+                        <button type="button" class="btn-comment-opt" onclick="startEditComment(${idx}, '${c.id}')" title="&#32232;&#36655;&#30041;&#35328;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:2px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>&#32232;&#36655;</button>
+                        <button type="button" class="btn-comment-opt text-danger" onclick="deleteSpotComment(${idx}, '${c.id}')" title="&#21034;&#38500;&#30041;&#35328;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:2px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>&#21034;&#38500;</button>
+                      </div>
+                    ` : ''}
+                  </div>
+                  <div class="comment-item-body" id="comment-body-${c.id}">
+                    ${escapeHtml(c.text)}
+                  </div>
+                  <div class="comment-inline-edit" id="comment-inline-edit-${c.id}" style="display:none;">
+                    <textarea class="comment-edit-textarea" id="comment-edit-text-${c.id}">${escapeHtml(c.text)}</textarea>
+                    <div class="comment-edit-btn-row">
+                      <button type="button" class="btn btn-sm btn-primary" onclick="saveEditComment(${idx}, '${c.id}')">&#20786;&#23384;&#20462;&#25913;</button>
+                      <button type="button" class="btn btn-sm" onclick="cancelEditComment('${c.id}')">&#21462;&#28040;</button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+
+          let composeAreaHtml = '';
+          if (myVote) {
+            const authorName = currentUser ? escapeHtml(currentUser.name) : '&#26053;&#20276;';
+            composeAreaHtml = `
+              <div class="comment-compose-wrap">
+                <input type="text" class="comment-input" id="comment-input-${idx}" placeholder="&#20197;&#12300;${authorName}&#12301;&#30340;&#36523;&#20998;&#30041;&#35328;..." onkeydown="if(event.key==='Enter') submitSpotComment(${idx})">
+                <button type="button" class="btn btn-primary btn-comment-send" onclick="submitSpotComment(${idx})">&#36865;&#20986;</button>
+              </div>
+            `;
+          } else {
+            composeAreaHtml = `
+              <div class="comment-locked-banner">
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>&#35531;&#20808;&#23436;&#25104;&#19978;&#26041;&#12300;&#24819;&#21435;&#12301;&#25110;&#12300;&#27794;&#33288;&#36259;&#12301;&#25237;&#31080;&#65292;&#21363;&#21487;&#30332;&#34920;&#35413;&#35542;&#33287;&#26053;&#20276;&#35342;&#35542;&#65281;</span>
+              </div>
+            `;
+          }
+
+          commentsDrawerHtml = `
+            <div class="spot-comments-panel">
+              <div class="spot-comments-list">${commentsItemsHtml}</div>
+              ${composeAreaHtml}
+            </div>
+          `;
+        }
+
+        const socialSectionHtml = `
+          <div class="spot-social-section">
+            <div class="spot-vote-bar">
+              <button type="button" class="btn-vote-pill ${myVote === 'up' ? 'active-up' : ''}" onclick="toggleSpotVote(${idx}, 'up')" title="&#25237; &#24819;&#21435;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                <span>&#24819;&#21435;</span>
+                <span class="vote-count">${upVotes.length}</span>
+              </button>
+              <button type="button" class="btn-vote-pill ${myVote === 'down' ? 'active-down' : ''}" onclick="toggleSpotVote(${idx}, 'down')" title="&#25237; &#27794;&#33288;&#36259;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+                <span>&#27794;&#33288;&#36259;</span>
+                <span class="vote-count">${downVotes.length}</span>
+              </button>
+              <button type="button" class="btn-social-toggle ${isVotersOpen ? 'active' : ''}" onclick="toggleVotersList(${idx})" title="&#26597;&#30475;&#20844;&#38283;&#25237;&#31080;&#21517;&#21934;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>&#21517;&#21934;</span>
+              </button>
+              <button type="button" class="btn-social-toggle toggle-comments ${isCommentsOpen ? 'active' : ''}" onclick="toggleCommentsList(${idx})" title="&#23637;&#38283;&#35342;&#35542;&#30041;&#35328;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>&#35342;&#35542;</span>
+                <span class="comment-count-badge">${comments.length}</span>
+              </button>
+            </div>
+            ${votersDrawerHtml}
+            ${commentsDrawerHtml}
+          </div>
+        `;
+
+
         card.innerHTML = `
           ${imgHtml}
           <div class="spot-card-body">
@@ -3578,6 +4434,8 @@
               <button class="btn admin-only" style="font-size:0.75rem; padding:0.25rem 0.55rem;" onclick="openEditSpotModal(${idx})">✏️ 編輯</button>
               <button class="btn btn-danger admin-only" style="font-size:0.75rem; padding:0.25rem 0.55rem;" onclick="deleteSpot(${idx})">🗑️ 刪除</button>
             </div>
+
+            ${socialSectionHtml}
           </div>
         `;
 
@@ -6240,6 +7098,7 @@
     // Start App
     window.addEventListener('DOMContentLoaded', () => {
       initData();
+      updateCompanionHeaderBadge();
       setupTabsHorizontalScroll();
       updateSidebarOverlay();
       window.scrollTo(0, 0);
