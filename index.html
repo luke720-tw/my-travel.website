@@ -1761,6 +1761,15 @@
         opacity: 0 !important;
         pointer-events: none !important;
       }
+      .search-box {
+        padding-top: max(0.85rem, calc(env(safe-area-inset-top, 0px) + 0.65rem));
+        padding-bottom: 0.85rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .nav-content {
+        padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1.2rem));
+      }
       .workspace-wrapper {
         padding: 0.85rem 0.85rem calc(4rem + env(safe-area-inset-bottom, 24px)) 0.85rem !important;
       }
@@ -1845,7 +1854,7 @@
         <span id="perm-badge-label">唯讀模式</span>
       </button>
 
-      <span id="app-version-badge" style="font-size: 0.68rem; padding: 0.2rem 0.38rem; background: rgba(56, 189, 248, 0.15); color: var(--accent); border-radius: 6px; font-weight: 700; font-family: monospace; white-space: nowrap;">v4.0</span>
+      <span id="app-version-badge" style="font-size: 0.68rem; padding: 0.2rem 0.38rem; background: rgba(56, 189, 248, 0.15); color: var(--accent); border-radius: 6px; font-weight: 700; font-family: monospace; white-space: nowrap;">v4.1</span>
 
       <button class="btn" onclick="openCloudSyncModal()" id="cloud-sync-header-btn" style="border-color: rgba(56, 189, 248, 0.4); color: var(--accent); background: rgba(56, 189, 248, 0.08); font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem;" title="即時雲端同步狀態 (支援電腦與手機雙向即時連線)">
         <span id="sync-status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block; box-shadow: 0 0 8px #f59e0b; transition: all 0.3s;"></span>
@@ -1904,7 +1913,7 @@
             <button class="btn" id="theme-btn" title="切換深色/淺色模式" style="width: 38px; height: 38px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;">
               <span id="theme-icon">☀️</span>
             </button>
-            <span style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.7; font-family: monospace;">v3.2</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.7; font-family: monospace;">v4.1</span>
           </div>
         </div>
       </nav>
