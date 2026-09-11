@@ -1697,6 +1697,10 @@
       display: none;
     }
 
+    /* Mobile Board Zoom Control Toolbar & Zoom Levels */
+    .mobile-board-zoom-bar {
+      display: none;
+    }
     .itin-board-wrapper.is-dragging {
       cursor: grabbing;
       user-select: none;
@@ -2171,6 +2175,158 @@
       .itin-board-top-scroll {
         margin-bottom: 0.5rem !important;
         touch-action: pan-x pan-y !important;
+      }
+      /* Mobile Board Zoom Bar (??撠惇?蝮格???? */
+      .mobile-board-zoom-bar {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0.25rem 0 0.55rem 0;
+        padding: 0.35rem 0.65rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      [data-theme="light"] .mobile-board-zoom-bar {
+        background: rgba(255, 255, 255, 0.72);
+        border-color: rgba(147, 51, 234, 0.16);
+        box-shadow: 0 2px 8px rgba(147, 51, 234, 0.05);
+      }
+      .mobile-zoom-title {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .mobile-zoom-btn-group {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 2px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      [data-theme="light"] .mobile-zoom-btn-group {
+        background: rgba(240, 240, 246, 0.85);
+        border-color: rgba(0, 0, 0, 0.08);
+      }
+      .mobile-zoom-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.22rem 0.52rem;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .mobile-zoom-btn.active {
+        background: linear-gradient(135deg, var(--accent), #818cf8);
+        color: #ffffff !important;
+        box-shadow: 0 2px 6px rgba(56, 189, 248, 0.35);
+      }
+      .mobile-zoom-btn:not(.active):active {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      /* Zoom Level: Compact (??蝮桀?璅∪?: 銝甈∠??拙予銵?) */
+      .itin-board-wrapper.zoom-compact {
+        gap: 0.55rem !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-column {
+        width: calc(50vw - 0.95rem) !important;
+        min-width: 155px !important;
+        max-width: calc(50vw - 0.95rem) !important;
+        flex: 0 0 calc(50vw - 0.95rem) !important;
+        padding: 0.52rem !important;
+        border-radius: 10px !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-col-header {
+        margin-bottom: 0.45rem !important;
+        padding-bottom: 0.35rem !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-day-pill {
+        font-size: 0.72rem !important;
+        padding: 0.16rem 0.42rem !important;
+        border-radius: 6px !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-day-date {
+        display: none !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-col-count {
+        font-size: 0.68rem !important;
+        padding: 1px 5px !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-col-body {
+        gap: 0.45rem !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-card {
+        border-radius: 8px !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-card-cover {
+        height: 75px !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-card-body {
+        padding: 0.42rem 0.5rem !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-card-title {
+        font-size: 0.78rem !important;
+        line-height: 1.25 !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-meta-item,
+      .itin-board-wrapper.zoom-compact .itin-board-transit,
+      .itin-board-wrapper.zoom-compact .itin-board-notes {
+        font-size: 0.68rem !important;
+        padding: 0.18rem 0.35rem !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-card-btn {
+        font-size: 0.68rem !important;
+        padding: 0.18rem 0.38rem !important;
+      }
+      .itin-board-wrapper.zoom-compact .itin-board-add-btn {
+        padding: 0.35rem !important;
+        font-size: 0.75rem !important;
+        border-radius: 8px !important;
+      }
+
+      /* Zoom Level: Normal (璅?璅∪?: 82vw + ?喳 Peek) */
+      .itin-board-wrapper.zoom-normal .itin-board-column {
+        width: min(290px, 82vw) !important;
+        min-width: min(290px, 82vw) !important;
+        max-width: min(290px, 82vw) !important;
+        flex: 0 0 min(290px, 82vw) !important;
+      }
+
+      /* Zoom Level: Large (?曉之璅∪?: 92vw 憭批?蝝啁?) */
+      .itin-board-wrapper.zoom-large {
+        gap: 0.75rem !important;
+      }
+      .itin-board-wrapper.zoom-large .itin-board-column {
+        width: calc(100vw - 1.8rem) !important;
+        min-width: calc(100vw - 1.8rem) !important;
+        max-width: calc(100vw - 1.8rem) !important;
+        flex: 0 0 calc(100vw - 1.8rem) !important;
+        padding: 0.95rem !important;
+      }
+      .itin-board-wrapper.zoom-large .itin-board-card-cover {
+        height: 155px !important;
+      }
+      .itin-board-wrapper.zoom-large .itin-board-card-title {
+        font-size: 1.05rem !important;
+      }
+      .itin-board-wrapper.zoom-large .itin-board-day-pill {
+        font-size: 0.92rem !important;
+        padding: 0.28rem 0.7rem !important;
       }
       html, body {
         position: static !important;
@@ -2884,7 +3040,7 @@
   <!-- App Body Layout -->
   <div class="app-body">
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar collapsed" id="sidebar">
       <div class="search-box">
         <span class="search-icon">🔍</span>
         <input type="text" class="search-input" id="search-input" placeholder="全域搜尋景點與行程..." autocomplete="off">
@@ -2928,7 +3084,7 @@
             <button class="btn" id="theme-btn" title="切換深色/淺色模式" style="width: 38px; height: 38px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;">
               <span id="theme-icon">☀️</span>
             </button>
-            <span style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.7; font-family: monospace;">v4.3</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.7; font-family: monospace;">v4.4</span>
           </div>
         </div>
       </nav>
@@ -5155,6 +5311,75 @@
       return '';
     }
 
+    let currentBoardZoom = localStorage.getItem('BOARD_ZOOM_LEVEL') || 'normal';
+
+    function setBoardZoomLevel(level) {
+      if (!['compact', 'normal', 'large'].includes(level)) level = 'normal';
+      currentBoardZoom = level;
+      try { localStorage.setItem('BOARD_ZOOM_LEVEL', level); } catch (e) {}
+
+      const wrapper = document.querySelector('.itin-board-wrapper');
+      if (wrapper) {
+        wrapper.classList.remove('zoom-compact', 'zoom-normal', 'zoom-large');
+        wrapper.classList.add('zoom-' + level);
+
+        const topScroll = document.querySelector('.itin-board-top-scroll');
+        const topInner = document.querySelector('.itin-board-top-scroll-inner');
+        if (topScroll && topInner) {
+          setTimeout(() => {
+            topInner.style.width = wrapper.scrollWidth + 'px';
+            topScroll.style.display = (wrapper.scrollWidth <= wrapper.clientWidth + 2) ? 'none' : 'block';
+          }, 60);
+        }
+      }
+
+      document.querySelectorAll('.mobile-zoom-btn').forEach(btn => {
+        const isTarget = btn.getAttribute('data-zoom') === level;
+        btn.classList.toggle('active', isTarget);
+      });
+    }
+
+    function enableBoardPinchZoom(el) {
+      if (!el) return;
+      let startDist = 0;
+      let hasPinched = false;
+
+      el.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          startDist = Math.hypot(dx, dy);
+          hasPinched = false;
+        }
+      }, { passive: true });
+
+      el.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && startDist > 0 && !hasPinched) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          const dist = Math.hypot(dx, dy);
+          const diff = dist - startDist;
+
+          if (Math.abs(diff) > 42) {
+            hasPinched = true;
+            const levels = ['compact', 'normal', 'large'];
+            const curIdx = levels.indexOf(currentBoardZoom);
+            if (diff > 0 && curIdx < levels.length - 1) {
+              setBoardZoomLevel(levels[curIdx + 1]);
+            } else if (diff < 0 && curIdx > 0) {
+              setBoardZoomLevel(levels[curIdx - 1]);
+            }
+          }
+        }
+      }, { passive: true });
+
+      el.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+          startDist = 0;
+          hasPinched = false;
+        }
+      }, { passive: true });
+    }
     function enableBoardDragScroll(el) {
       if (!el) return;
       let isDown = false;
@@ -5394,7 +5619,7 @@
         });
 
         const boardWrapper = document.createElement('div');
-        boardWrapper.className = 'itin-board-wrapper';
+        boardWrapper.className = 'itin-board-wrapper zoom-' + currentBoardZoom;
 
         daysList.forEach((d, dIdx) => {
           const items = dayBuckets[d] || [];
@@ -5500,7 +5725,27 @@
         topScrollInner.className = 'itin-board-top-scroll-inner';
         topScroll.appendChild(topScrollInner);
 
+        const zoomBar = document.createElement('div');
+        zoomBar.className = 'mobile-board-zoom-bar';
+        zoomBar.innerHTML = 
+          '<div class="mobile-zoom-title">' +
+          '  <span>\ud83d\udd0d \u6b04\u4f4d\u8996\u5716</span>' +
+          '</div>' +
+          '<div class="mobile-zoom-btn-group">' +
+          '  <button type="button" class="mobile-zoom-btn ' + (currentBoardZoom === 'compact' ? 'active' : '') + '" data-zoom="compact" onclick="setBoardZoomLevel(\'compact\')" title="\u7e2e\u5c0f\u4e00\u89bd (\u4e00\u773c\u770b\u96d9\u6b04)">' +
+          '    <span class="mobile-zoom-icon">\u229e</span> \u96d9\u6b04' +
+          '  </button>' +
+          '  <button type="button" class="mobile-zoom-btn ' + (currentBoardZoom === 'normal' ? 'active' : '') + '" data-zoom="normal" onclick="setBoardZoomLevel(\'normal\')" title="\u6a19\u6e96\u6b04\u5bec (1 \u6b04 + \u908a\u7de3)">' +
+          '    <span class="mobile-zoom-icon">\u25a2</span> \u6a19\u6e96' +
+          '  </button>' +
+          '  <button type="button" class="mobile-zoom-btn ' + (currentBoardZoom === 'large' ? 'active' : '') + '" data-zoom="large" onclick="setBoardZoomLevel(\'large\')" title="\u653e\u5927\u6b04\u5bec (\u6eff\u7248\u5927\u5b57)">' +
+          '    <span class="mobile-zoom-icon">\u2795</span> \u653e\u5927' +
+          '  </button>' +
+          '</div>';
+
         enableBoardDragScroll(boardWrapper);
+        enableBoardPinchZoom(boardWrapper);
+        timelineContainer.appendChild(zoomBar);
         timelineContainer.appendChild(topScroll);
         timelineContainer.appendChild(boardWrapper);
         syncBoardScrollbars(boardWrapper, topScroll, topScrollInner);
@@ -8016,7 +8261,11 @@
 
     // Start App
     window.addEventListener('DOMContentLoaded', () => {
-      if (isMobileSidebarMode()) { closeSidebar(); }
+      if (isMobileSidebarMode()) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
       initData();
       updateCompanionHeaderBadge();
       setupTabsHorizontalScroll();

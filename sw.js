@@ -1,5 +1,5 @@
 ﻿// Service Worker for Luke旅遊紀錄 PWA
-const CACHE_NAME = 'travel-luke-cache-v23';
+const CACHE_NAME = 'travel-luke-cache-v25';
 const STATIC_ASSETS = [
   './',
   './index.html',
