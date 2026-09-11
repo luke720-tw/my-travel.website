@@ -153,13 +153,13 @@
       flex-shrink: 0;
     }
 
-    .header-left {
+    .header-left, .header-scroll-track {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 0.65rem;
       flex: 1;
       min-width: 0;
-      overflow: hidden;
     }
 
     .sidebar-toggle-btn {
@@ -1633,68 +1633,93 @@
       .search-input {
         font-size: 16px !important;
       }
-      .header-left {
-        gap: 0.25rem;
-        flex: 1;
-        min-width: 0;
+            .sidebar-toggle-btn {
+        width: 34px !important;
+        height: 34px !important;
+        flex-shrink: 0 !important;
       }
-      .sidebar-toggle-btn {
-        width: 32px;
-        height: 32px;
-        flex-shrink: 0;
+      /* Mobile Horizontal Scroll Track: Smooth left-right swipe */
+      .header-scroll-track {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 0.45rem !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-x !important;
+        overscroll-behavior-x: contain !important;
+        scrollbar-width: none !important;
+        white-space: nowrap !important;
+        padding: 2px 4px 2px 2px !important;
       }
-      .header-actions {
-        gap: 0.2rem;
-        flex-shrink: 0;
-      }
-      .header-actions .btn {
-        padding: 0.28rem 0.42rem;
-        font-size: 0.72rem;
-        white-space: nowrap;
-      }
-      #perm-badge-btn {
-        padding: 0.28rem 0.42rem;
-        font-size: 0.72rem;
-      }
-      #cloud-sync-header-btn {
-        padding: 0.28rem 0.38rem;
-        font-size: 0.72rem;
-      }
-      /* Mobile Destination Selector: Hide scrollable tabs, show clean dropdown selector */
-      .trip-tabs-outer {
+      .header-scroll-track::-webkit-scrollbar {
         display: none !important;
       }
-      .mobile-trip-select-wrap {
-        display: flex;
-        align-items: center;
-        flex: 1;
-        min-width: 0;
-        margin: 0 0.15rem;
+      .trip-tabs-outer {
+        display: flex !important;
+        align-items: center !important;
+        flex-shrink: 0 !important;
+        min-width: 0 !important;
       }
-      .mobile-trip-select {
-        width: 100%;
-        max-width: 100%;
-        height: 34px;
-        padding: 0.2rem 1.6rem 0.2rem 0.55rem;
-        background-color: var(--bg-card);
-        color: var(--text-main);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        cursor: pointer;
-        outline: none;
-        appearance: none;
-        -webkit-appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 0.45rem center;
-        background-size: 0.95rem;
-        box-shadow: var(--shadow-sm);
-        transition: border-color 0.2s, box-shadow 0.2s;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
+      .trip-tabs-nav-btn {
+        display: none !important; /* Swipe directly with touch */
+      }
+      .trip-tabs-wrapper {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.32rem !important;
+        overflow: visible !important;
+        flex-shrink: 0 !important;
+        padding: 0 !important;
+      }
+      .trip-tabs-list {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.32rem !important;
+        flex-shrink: 0 !important;
+      }
+      .trip-tab {
+        padding: 0.28rem 0.62rem !important;
+        font-size: 0.8rem !important;
+        gap: 0.3rem !important;
+        border-radius: 8px !important;
+        flex-shrink: 0 !important;
+      }
+      .trip-tab-badge {
+        font-size: 0.65rem !important;
+        padding: 0.08rem 0.32rem !important;
+      }
+      .trip-add-tab-btn {
+        padding: 0.28rem 0.55rem !important;
+        font-size: 0.8rem !important;
+        border-radius: 8px !important;
+        flex-shrink: 0 !important;
+      }
+      .mobile-trip-select-wrap {
+        display: none !important;
+      }
+      .header-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.32rem !important;
+        flex-shrink: 0 !important;
+      }
+      .header-actions .btn {
+        padding: 0.28rem 0.42rem !important;
+        font-size: 0.72rem !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+      #perm-badge-btn {
+        padding: 0.28rem 0.42rem !important;
+        font-size: 0.72rem !important;
+      }
+      #cloud-sync-header-btn {
+        padding: 0.28rem 0.38rem !important;
+        font-size: 0.72rem !important;
       }
       .mobile-trip-select:focus {
         border-color: var(--accent);
@@ -2212,59 +2237,60 @@
 
   <!-- Header -->
   <header>
-    <div class="header-left">
-      <button class="sidebar-toggle-btn" id="toggle-sidebar" title="收合/展開側邊欄">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
+    <button class="sidebar-toggle-btn" id="toggle-sidebar" title="&#25910;&#21512;/&#23637;&#38283;&#20596;&#37002;&#27396;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
 
-      <!-- Multi-Trip Destination Tabs with Scroll Controls (Desktop / Tablet) -->
+    <!-- Scrollable Header Track (Multi-Trip Tabs + Actions) -->
+    <div class="header-scroll-track" id="header-scroll-track">
+      <!-- Multi-Trip Destination Tabs with Scroll Controls -->
       <div class="trip-tabs-outer">
-        <button class="trip-tabs-nav-btn hidden" id="tabs-scroll-left" onclick="scrollTripTabs(-220)" title="向左捲動分頁">‹</button>
+        <button class="trip-tabs-nav-btn hidden" id="tabs-scroll-left" onclick="scrollTripTabs(-220)" title="&#21521;&#24038;&#25458;&#21205;">&#8249;</button>
         <div class="trip-tabs-wrapper" id="trip-tabs-wrapper">
           <div class="trip-tabs-list" id="trip-tabs-container">
             <!-- Dynamically populated trip tabs -->
           </div>
-          <button class="trip-add-tab-btn admin-only" onclick="openAddTripModal()" title="新增旅遊目的地分頁 (例如：日本東京)">
-            <span>➕</span>
-            <span>新分頁</span>
+          <button class="trip-add-tab-btn admin-only" onclick="openAddTripModal()" title="&#26032;&#22686;&#26053;&#31243;&#30446;&#30340;&#22320;">
+            <span>+</span>
+            <span>&#26032;&#22686;</span>
           </button>
         </div>
-        <button class="trip-tabs-nav-btn hidden" id="tabs-scroll-right" onclick="scrollTripTabs(220)" title="向右捲動分頁">›</button>
+        <button class="trip-tabs-nav-btn hidden" id="tabs-scroll-right" onclick="scrollTripTabs(220)" title="&#21521;&#21491;&#25458;&#21205;">&#8250;</button>
       </div>
 
-      <!-- Mobile Destination Selector Dropdown -->
-      <div class="mobile-trip-select-wrap">
-        <select class="mobile-trip-select" id="mobile-trip-select" onchange="handleMobileTripChange(this.value)" title="選擇旅遊分頁">
-          <!-- Dynamically populated options -->
+      <div class="mobile-trip-select-wrap" style="display:none !important;">
+        <select class="mobile-trip-select" id="mobile-trip-select" onchange="handleMobileTripChange(this.value)" title="&#20999;&#25563;&#26053;&#31243;">
         </select>
       </div>
-    </div>
 
-    <div class="header-actions">
-      <!-- Permission Lock / Unlock Button -->
-      <button class="btn" id="companion-user-badge-btn" onclick="openCompanionUserModal()" title="&#26053;&#20276;&#31805;&#21040; / &#20462;&#25913;&#23567;&#21517;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2.5px; margin-right:4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        <span id="companion-user-name-label">&#26053;&#20276;&#31805;&#21040;</span>
-      </button>
+      <div class="header-actions">
+        <!-- Companion Check-in Button -->
+        <button class="btn" id="companion-user-badge-btn" onclick="openCompanionUserModal()" title="&#26053;&#20276;&#31805;&#21040; / &#20462;&#25913;&#23567;&#21517;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2.5px; margin-right:4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span id="companion-user-name-label">&#26053;&#20276;&#31805;&#21040;</span>
+        </button>
 
-      <button class="btn" id="perm-badge-btn" onclick="handlePermissionBadgeClick()" title="權限狀態" style="font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
-        <span id="perm-badge-icon">🔒</span>
-        <span id="perm-badge-label">唯讀模式</span>
-      </button>
+        <!-- Permission Lock / Unlock Button -->
+        <button class="btn" id="perm-badge-btn" onclick="handlePermissionBadgeClick()" title="&#27402;&#38480;&#29376;&#24907;" style="font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+          <span id="perm-badge-icon">&#128274;</span>
+          <span id="perm-badge-label">&#21807;&#35712;&#27169;&#24335;</span>
+        </button>
 
-      <span id="app-version-badge" style="font-size: 0.68rem; padding: 0.2rem 0.38rem; background: rgba(56, 189, 248, 0.15); color: var(--accent); border-radius: 6px; font-weight: 700; font-family: monospace; white-space: nowrap;">v4.2</span>
+        <!-- Realtime Cloud Sync Status Button -->
+        <button class="btn" onclick="openCloudSyncModal()" id="cloud-sync-header-btn" style="border-color: rgba(56, 189, 248, 0.4); color: var(--accent); background: rgba(56, 189, 248, 0.08); font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem;" title="&#21363;&#26178;&#38642;&#31471;&#21516;&#27493;&#29376;&#24907;">
+          <span id="sync-status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block; box-shadow: 0 0 8px #f59e0b; transition: all 0.3s;"></span>
+          <span id="sync-status-label">&#36899;&#32218;&#20013;...</span>
+        </button>
 
-      <button class="btn" onclick="openCloudSyncModal()" id="cloud-sync-header-btn" style="border-color: rgba(56, 189, 248, 0.4); color: var(--accent); background: rgba(56, 189, 248, 0.08); font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem;" title="即時雲端同步狀態 (支援電腦與手機雙向即時連線)">
-        <span id="sync-status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block; box-shadow: 0 0 8px #f59e0b; transition: all 0.3s;"></span>
-        <span id="sync-status-label">連線中...</span>
-      </button>
-      <button class="btn btn-success" id="btn-save-changes" onclick="saveAllChanges()" title="立即儲存所有修改至本機">
-        💾 儲存修改
-      </button>
+        <!-- Save Button for Unlocked Admin -->
+        <button class="btn btn-success" id="btn-save-changes" onclick="saveAllChanges()" title="&#20786;&#23384;&#25152;&#26377;&#20462;&#25913;">
+          &#128190; &#20786;&#23384;&#20462;&#25913;
+        </button>
+      </div>
     </div>
   </header>
 
