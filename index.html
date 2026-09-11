@@ -1682,10 +1682,11 @@
       align-items: flex-start;
       gap: 1.15rem;
       overflow-x: auto;
-      overflow-y: hidden;
+      overflow-y: visible;
       padding: 0.25rem 0.25rem 1.5rem 0.25rem;
       -webkit-overflow-scrolling: touch;
-      touch-action: pan-x;
+      touch-action: pan-x pan-y;
+      overscroll-behavior-y: auto;
       scroll-behavior: smooth;
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -2153,13 +2154,23 @@
         min-width: min(290px, 82vw) !important;
         max-width: min(290px, 82vw) !important;
         flex: 0 0 min(290px, 82vw) !important;
+        touch-action: pan-x pan-y !important;
       }
       .itin-board-wrapper {
         gap: 0.85rem !important;
         padding-bottom: 1.2rem !important;
+        touch-action: pan-x pan-y !important;
+        overscroll-behavior-y: auto !important;
+        overflow-y: visible !important;
+      }
+      .itin-board-col-body,
+      .itin-board-card,
+      .itin-board-card * {
+        touch-action: pan-x pan-y !important;
       }
       .itin-board-top-scroll {
         margin-bottom: 0.5rem !important;
+        touch-action: pan-x pan-y !important;
       }
       html, body {
         position: static !important;
