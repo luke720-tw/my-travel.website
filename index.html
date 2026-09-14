@@ -2619,11 +2619,92 @@
     }
 
     /* 投票列 */
+    /* ?巨??憭??舀 */
     .spot-vote-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .spot-vote-row {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 0.45rem;
+      gap: 0.42rem;
+    }
+    .spot-vote-row.sub-row {
+      padding-top: 0.35rem;
+      border-top: 1px dotted rgba(255, 255, 255, 0.09);
+    }
+    [data-theme="light"] .spot-vote-row.sub-row {
+      border-top: 1px dotted rgba(0, 0, 0, 0.08);
+    }
+    .vote-group-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.16rem 0.46rem;
+      border-radius: 6px;
+      letter-spacing: 0.02em;
+      user-select: none;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .tag-visited {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+    }
+    .tag-pretrip {
+      background: rgba(168, 85, 247, 0.14);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.32);
+    }
+    [data-theme="light"] .tag-visited {
+      background: rgba(14, 165, 233, 0.12);
+      color: #0284c7;
+      border-color: rgba(14, 165, 233, 0.25);
+    }
+    [data-theme="light"] .tag-pretrip {
+      background: rgba(147, 51, 234, 0.1);
+      color: #7e22ce;
+      border-color: rgba(147, 51, 234, 0.25);
+    }
+    .btn-vote-pill.sub-pill {
+      font-size: 0.74rem;
+      padding: 0.24rem 0.55rem;
+      opacity: 0.9;
+    }
+    .btn-vote-pill.sub-pill:hover {
+      opacity: 1;
+    }
+    .btn-vote-pill.locked-pill {
+      cursor: not-allowed !important;
+      opacity: 0.82;
+    }
+    .btn-vote-pill.locked-pill:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .btn-vote-pill.locked-pill.active-up:hover {
+      border-color: rgba(52, 211, 153, 0.4) !important;
+      background: rgba(52, 211, 153, 0.15) !important;
+    }
+    .btn-vote-pill.locked-pill.active-down:hover {
+      border-color: rgba(248, 113, 113, 0.4) !important;
+      background: rgba(248, 113, 113, 0.15) !important;
+    }
+    .btn-vote-pill.locked-pill:active {
+      transform: none !important;
+    }
+
+    .voters-section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.02em;
+    }
+    [data-theme="light"] .voters-section-title {
+      color: #7e22ce;
     }
 
     /* 投票膠囊按鈕 */
@@ -3084,7 +3165,7 @@
             <button class="btn" id="theme-btn" title="切換深色/淺色模式" style="width: 38px; height: 38px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;">
               <span id="theme-icon">☀️</span>
             </button>
-            <span style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.7; font-family: monospace;">v4.4</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted); opacity: 0.7; font-family: monospace;">v4.5</span>
           </div>
         </div>
       </nav>
@@ -3502,9 +3583,13 @@
               <input type="checkbox" id="copy-spots-checkbox" checked onchange="updateCopyCheckboxes()" style="accent-color: var(--accent); width: 16px; height: 16px;">
               <span id="copy-spots-label">複製觀光景點管理資料</span>
             </label>
-            <label style="display: flex; align-items: center; gap: 0.55rem; font-size: 0.85rem; cursor: pointer; color: var(--text-main);">
+            <label style="display: flex; align-items: center; gap: 0.55rem; font-size: 0.85rem; cursor: pointer; margin-bottom: 0.4rem; color: var(--text-main);">
               <input type="checkbox" id="copy-itin-checkbox" checked onchange="updateCopyCheckboxes()" style="accent-color: var(--accent); width: 16px; height: 16px;">
               <span id="copy-itin-label">複製每日行程安排資料（含天數規劃）</span>
+            </label>
+            <label id="copy-social-wrap" style="display: flex; align-items: center; gap: 0.55rem; font-size: 0.85rem; cursor: pointer; color: var(--text-main); transition: opacity 0.2s;">
+              <input type="checkbox" id="copy-social-checkbox" checked onchange="updateCopyCheckboxes()" style="accent-color: var(--accent); width: 16px; height: 16px;">
+              <span id="copy-social-label">複製景點的「已拜訪/未拜訪」狀態、投票結果與評論</span>
             </label>
           </div>
         </div>
@@ -3880,23 +3965,62 @@
       return `${m}/${day} ${h}:${min}`;
     }
 
-    function toggleSpotVote(spotIdx, type) {
+        function toggleSpotVote(spotIdx, category, voteVal) {
+      // Compatibility if called with legacy signature toggleSpotVote(spotIdx, 'up'|'down')
+      if (category === 'up' || category === 'down') {
+        voteVal = (category === 'up' ? 'want' : 'not_want');
+        category = 'want';
+      }
+
       ensureCompanionUser((user) => {
         const spot = appData.spots[spotIdx];
         if (!spot) return;
+
+        // 當景點改為「已造訪」後，使用者不能再投票行前意向的「想去」與「不想去」，除非是當景點改回「未造訪」時才能再投票
+        const isVisited = (spot['已拜訪'] === 'Yes' || spot.visited === true);
+        if (isVisited && category === 'want') {
+          showToast('景點已標記為「已造訪」，行前意向已封存無法修改');
+          return;
+        }
+        if (!isVisited && category === 'like') {
+          showToast('景點尚未造訪，無法評價「喜歡/不喜歡」');
+          return;
+        }
+
         if (!spot.votes || typeof spot.votes !== 'object') spot.votes = {};
 
-        const currentVote = spot.votes[user.id];
-        if (currentVote && currentVote.type === type) {
-          delete spot.votes[user.id];
+
+        if (!spot.votes[user.id] || typeof spot.votes[user.id] !== 'object') {
+          spot.votes[user.id] = { name: user.name, time: Date.now() };
+        } else {
+          spot.votes[user.id].name = user.name;
+        }
+
+        // Migrate legacy type if present
+        if (spot.votes[user.id].type && !spot.votes[user.id].want) {
+          spot.votes[user.id].want = (spot.votes[user.id].type === 'up') ? 'want' : 'not_want';
+        }
+
+        const currentVal = spot.votes[user.id][category];
+        if (currentVal === voteVal) {
+          // Cancel this vote
+          delete spot.votes[user.id][category];
+          if (category === 'want') delete spot.votes[user.id].type;
           showToast('\u5DF2\u53D6\u6D88\u6295\u7968');
         } else {
-          spot.votes[user.id] = {
-            name: user.name,
-            type: type,
-            time: Date.now()
-          };
-          showToast(type === 'up' ? '\u5DF2\u6A19\u8A18\u559C\u6B61/\u60F3\u53BB\uFF01' : '\u5DF2\u6A19\u8A18\u4E0D\u559C\u6B61/\u6C92\u8208\u8DA3');
+          spot.votes[user.id][category] = voteVal;
+          spot.votes[user.id].time = Date.now();
+          if (category === 'want') {
+            spot.votes[user.id].type = (voteVal === 'want' ? 'up' : 'down');
+            showToast(voteVal === 'want' ? '\u5DF2\u6A19\u8A18\u60F3\u53BB\uFF01' : '\u5DF2\u6A19\u8A18\u4E0D\u60F3\u53BB');
+          } else {
+            showToast(voteVal === 'like' ? '\u5DF2\u6A19\u8A18\u559C\u6B61\uFF01' : '\u5DF2\u6A19\u8A18\u4E0D\u559C\u6B61');
+          }
+        }
+
+        // If user has neither want nor like, remove entry
+        if (!spot.votes[user.id].want && !spot.votes[user.id].like) {
+          delete spot.votes[user.id];
         }
 
         syncSocialChanges();
@@ -3919,9 +4043,10 @@
         const spot = appData.spots[spotIdx];
         if (!spot) return;
 
-        const userVote = spot.votes && spot.votes[user.id] ? spot.votes[user.id].type : null;
-        if (!userVote) {
-          showToast('\u8ACB\u5148\u65BC\u4E0A\u65B9\u5B8C\u6210\u6295\u7968\uFF08\u60F3\u53BB / \u6C92\u8208\u8DA3\uFF09\uFF0C\u5373\u53EF\u7559\u8A00\uFF01');
+        const uRec = spot.votes && spot.votes[user.id] ? spot.votes[user.id] : null;
+        const hasVoted = uRec && (uRec.want || uRec.like || uRec.type);
+        if (!hasVoted) {
+          showToast('\u8ACB\u5148\u65BC\u4E0A\u65B9\u5B8C\u6210\u6295\u7968\uFF0C\u5373\u53EF\u7559\u8A00\uFF01');
           return;
         }
 
@@ -3939,86 +4064,22 @@
         }
 
         const newComment = {
-          id: 'c_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-          deviceId: user.id,
+          id: 'c_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+          userId: user.id,
           name: user.name,
           text: text,
-          createdAt: Date.now(),
-          isEdited: false,
-          editedAt: null
+          time: Date.now()
         };
 
         spot.comments.push(newComment);
         input.value = '';
-
-        spotCommentsOpen[spotIdx] = true;
         syncSocialChanges();
+        spotCommentsOpen[spotIdx] = true;
         renderSpots();
-        showToast('\u7559\u8A00\u5DF2\u767C\u5E03\uFF01');
+        showToast('\u7559\u8A00\u5DF2\u6210\u529F\u767C\u5E03\uFF01');
       });
     }
-
-    function startEditComment(spotIdx, commentId) {
-      const user = getCompanionUser();
-      if (!user) return;
-      const spot = appData.spots[spotIdx];
-      if (!spot || !Array.isArray(spot.comments)) return;
-      const comment = spot.comments.find(c => c && c.id === commentId);
-      if (!comment || comment.deviceId !== user.id) {
-        showToast('\u53EA\u6709\u672C\u4EBA\u53EF\u4EE5\u7DE8\u8F2F\u6B64\u7559\u8A00');
-        return;
-      }
-
-      const bodyEl = document.getElementById('comment-body-' + commentId);
-      const editWrap = document.getElementById('comment-inline-edit-' + commentId);
-      const textarea = document.getElementById('comment-edit-text-' + commentId);
-      if (bodyEl) bodyEl.style.display = 'none';
-      if (editWrap) editWrap.style.display = 'block';
-      if (textarea) {
-        textarea.value = comment.text;
-        textarea.focus();
-      }
-    }
-
-    function cancelEditComment(commentId) {
-      const bodyEl = document.getElementById('comment-body-' + commentId);
-      const editWrap = document.getElementById('comment-inline-edit-' + commentId);
-      if (bodyEl) bodyEl.style.display = 'block';
-      if (editWrap) editWrap.style.display = 'none';
-    }
-
-    function saveEditComment(spotIdx, commentId) {
-      const user = getCompanionUser();
-      if (!user) return;
-      const spot = appData.spots[spotIdx];
-      if (!spot || !Array.isArray(spot.comments)) return;
-      const comment = spot.comments.find(c => c && c.id === commentId);
-      if (!comment || comment.deviceId !== user.id) {
-        showToast('\u53EA\u6709\u672C\u4EBA\u53EF\u4EE5\u7DE8\u8F2F\u6B64\u7559\u8A00');
-        return;
-      }
-
-      const textarea = document.getElementById('comment-edit-text-' + commentId);
-      if (!textarea) return;
-      const newText = textarea.value.trim();
-      if (!newText) {
-        showToast('\u7559\u8A00\u5167\u5BB9\u4E0D\u80FD\u70BA\u7A7A\uFF01');
-        textarea.focus();
-        return;
-      }
-
-      comment.text = newText;
-      comment.isEdited = true;
-      comment.editedAt = Date.now();
-      comment.name = user.name;
-
-      spotCommentsOpen[spotIdx] = true;
-      syncSocialChanges();
-      renderSpots();
-      showToast('\u7559\u8A00\u5DF2\u66F4\u65B0\uFF01');
-    }
-
-    function deleteSpotComment(spotIdx, commentId) {
+function deleteSpotComment(spotIdx, commentId) {
       const user = getCompanionUser();
       if (!user) return;
       const spot = appData.spots[spotIdx];
@@ -5085,60 +5146,109 @@
           });
         }
 
-                // Social / Voting / Comments computation
+                        // Social / Voting / Comments computation
         const currentUser = getCompanionUser();
         const currentUserId = currentUser ? currentUser.id : null;
-        const votes = (spot.votes && typeof spot.votes === 'object') ? spot.votes : {};
-        const voteEntries = Object.entries(votes);
-        const upVotes = voteEntries.filter(([k, v]) => v && v.type === 'up').map(([k, v]) => v);
-        const downVotes = voteEntries.filter(([k, v]) => v && v.type === 'down').map(([k, v]) => v);
-        const myVote = (currentUserId && votes[currentUserId]) ? votes[currentUserId].type : null;
-        const totalVotes = upVotes.length + downVotes.length;
-
-        const rawComments = spot.comments ? (Array.isArray(spot.comments) ? spot.comments : Object.values(spot.comments)) : [];
-        const comments = rawComments.filter(Boolean);
-
         const isVotersOpen = !!spotVotersOpen[idx];
         const isCommentsOpen = !!spotCommentsOpen[idx];
+        const comments = Array.isArray(spot.comments) ? spot.comments : Object.values(spot.comments || {});
+
+        const votes = (spot.votes && typeof spot.votes === 'object') ? spot.votes : {};
+        const voteEntries = Object.entries(votes);
+
+        // Normalize votes into want and like categories
+        const wantUpList = [];
+        const wantDownList = [];
+        const likeUpList = [];
+        const likeDownList = [];
+
+        voteEntries.forEach(([uid, v]) => {
+          if (!v) return;
+          const uName = v.name || '\u65C5\u4F34';
+          const wVal = v.want || (v.type === 'up' ? 'want' : (v.type === 'down' ? 'not_want' : null));
+          if (wVal === 'want') wantUpList.push({ id: uid, name: uName, time: v.time });
+          else if (wVal === 'not_want') wantDownList.push({ id: uid, name: uName, time: v.time });
+
+          const lVal = v.like || null;
+          if (lVal === 'like') likeUpList.push({ id: uid, name: uName, time: v.time });
+          else if (lVal === 'dislike') likeDownList.push({ id: uid, name: uName, time: v.time });
+        });
+
+        const myVoteRecord = currentUserId ? votes[currentUserId] : null;
+        const myWant = myVoteRecord ? (myVoteRecord.want || (myVoteRecord.type === 'up' ? 'want' : (myVoteRecord.type === 'down' ? 'not_want' : null))) : null;
+        const myLike = myVoteRecord ? (myVoteRecord.like || null) : null;
+        const hasVotedAny = !!(myWant || myLike);
 
         let votersDrawerHtml = '';
         if (isVotersOpen) {
-          const upListStr = upVotes.map(v => `<span class="voter-chip up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg> ${escapeHtml(v.name || '&#26053;&#20276;')}</span>`).join('') || '<span class="voter-empty">&#26283;&#28961;</span>';
-          const downListStr = downVotes.map(v => `<span class="voter-chip down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg> ${escapeHtml(v.name || '&#26053;&#20276;')}</span>`).join('') || '<span class="voter-empty">&#26283;&#28961;</span>';
-          votersDrawerHtml = `
-            <div class="spot-voters-panel">
-              <div class="voters-group">
-                <span class="voters-group-title">&#21916;&#27489;/&#24819;&#21435; (${upVotes.length})&#65306;</span>
-                <div class="voters-chips-wrap">${upListStr}</div>
+          const makeVoterChips = (list, isUp) => {
+            if (!list || list.length === 0) return '<span class="voter-empty">\u66AB\u7121</span>';
+            const iconSvg = isUp ? 
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>' : 
+              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>';
+            return list.map(v => `<span class="voter-chip ${isUp ? 'up' : 'down'}">${iconSvg} ${escapeHtml(v.name || '\u65C5\u4F34')}</span>`).join('');
+          };
+
+          if (visited) {
+            votersDrawerHtml = `
+              <div class="spot-voters-panel">
+                <div class="voters-section-title">\u2B50 \u9020\u8A2A\u5FC3\u5F97\u8A55\u50F9</div>
+                <div class="voters-group">
+                  <span class="voters-group-title">\u559C\u6B61 (${likeUpList.length})\uFF1A</span>
+                  <div class="voters-chip-list">${makeVoterChips(likeUpList, true)}</div>
+                </div>
+                <div class="voters-group">
+                  <span class="voters-group-title">\u4E0D\u559C\u6B61 (${likeDownList.length})\uFF1A</span>
+                  <div class="voters-chip-list">${makeVoterChips(likeDownList, false)}</div>
+                </div>
+
+                <div class="voters-section-title" style="margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px dashed rgba(255,255,255,0.1);">\uD83D\uDCCC \u884C\u7A0B\u524D\u610F\u5411\u7D00\u9304</div>
+                <div class="voters-group">
+                  <span class="voters-group-title">\u60F3\u53BB (${wantUpList.length})\uFF1A</span>
+                  <div class="voters-chip-list">${makeVoterChips(wantUpList, true)}</div>
+                </div>
+                <div class="voters-group">
+                  <span class="voters-group-title">\u4E0D\u60F3\u53BB (${wantDownList.length})\uFF1A</span>
+                  <div class="voters-chip-list">${makeVoterChips(wantDownList, false)}</div>
+                </div>
               </div>
-              <div class="voters-group">
-                <span class="voters-group-title">&#19981;&#21916;&#27489;/&#27794;&#33288;&#36259; (${downVotes.length})&#65306;</span>
-                <div class="voters-chips-wrap">${downListStr}</div>
+            `;
+          } else {
+            votersDrawerHtml = `
+              <div class="spot-voters-panel">
+                <div class="voters-group">
+                  <span class="voters-group-title">\u60F3\u53BB (${wantUpList.length})\uFF1A</span>
+                  <div class="voters-chip-list">${makeVoterChips(wantUpList, true)}</div>
+                </div>
+                <div class="voters-group">
+                  <span class="voters-group-title">\u4E0D\u60F3\u53BB (${wantDownList.length})\uFF1A</span>
+                  <div class="voters-chip-list">${makeVoterChips(wantDownList, false)}</div>
+                </div>
               </div>
-            </div>
-          `;
+            `;
+          }
         }
 
         let commentsDrawerHtml = '';
         if (isCommentsOpen) {
           let commentsItemsHtml = '';
           if (comments.length === 0) {
-            commentsItemsHtml = `<div class="comment-empty-hint">&#23578;&#28961;&#35342;&#35542;&#65292;&#25104;&#28858;&#31532;&#19968;&#20491;&#30041;&#35328;&#30340;&#26053;&#20276;&#21543;&#65281;</div>`;
+            commentsItemsHtml = '<div class="comments-empty">\u5C1A\u7121\u7559\u8A00\uFF0C\u6295\u7968\u5F8C\u6436\u5148\u767C\u8868\u60A8\u7684\u770B\u6CD5\u5427\uFF01</div>';
           } else {
             commentsItemsHtml = comments.map(c => {
-              const isMyComment = currentUserId && (c.deviceId === currentUserId);
-              const timeStr = formatCommentTime(c.createdAt);
-              const editedStr = c.isEdited ? `<span class="comment-edited-tag" title="&#26368;&#24460;&#32232;&#36655;&#65306;${formatCommentTime(c.editedAt)}">(&#24050;&#32232;&#36655; ${formatCommentTime(c.editedAt)})</span>` : '';
+              const isMyComment = currentUserId && (c.userId === currentUserId);
+              const timeStr = formatCommentTime(c.time);
+              const editedStr = c.editedAt ? `<span class="comment-edited-tag" title="\u6700\u5F8C\u4FEE\u6539\u65BC ${formatCommentTime(c.editedAt)}">(\u5DF2\u7DE8\u8F2F)</span>` : '';
               return `
                 <div class="comment-item" id="comment-item-${c.id}">
                   <div class="comment-item-header">
-                    <span class="comment-item-author"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>${escapeHtml(c.name || '&#26053;&#20276;')}</span>
+                    <span class="comment-item-author"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>${escapeHtml(c.name || '\u65C5\u4F34')}</span>
                     <span class="comment-item-time">${timeStr}</span>
                     ${editedStr}
                     ${isMyComment ? `
                       <div class="comment-item-actions">
-                        <button type="button" class="btn-comment-opt" onclick="startEditComment(${idx}, '${c.id}')" title="&#32232;&#36655;&#30041;&#35328;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:2px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>&#32232;&#36655;</button>
-                        <button type="button" class="btn-comment-opt text-danger" onclick="deleteSpotComment(${idx}, '${c.id}')" title="&#21034;&#38500;&#30041;&#35328;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:2px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>&#21034;&#38500;</button>
+                        <button type="button" class="btn-comment-opt" onclick="startEditComment(${idx}, '${c.id}')" title="\u7DE8\u8F2F\u7559\u8A00"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:2px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>\u7DE8\u8F2F</button>
+                        <button type="button" class="btn-comment-opt text-danger" onclick="deleteSpotComment(${idx}, '${c.id}')" title="\u522A\u9664\u7559\u8A00"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:2px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>\u522A\u9664</button>
                       </div>
                     ` : ''}
                   </div>
@@ -5148,8 +5258,8 @@
                   <div class="comment-inline-edit" id="comment-inline-edit-${c.id}" style="display:none;">
                     <textarea class="comment-edit-textarea" id="comment-edit-text-${c.id}">${escapeHtml(c.text)}</textarea>
                     <div class="comment-edit-btn-row">
-                      <button type="button" class="btn btn-sm btn-primary" onclick="saveEditComment(${idx}, '${c.id}')">&#20786;&#23384;&#20462;&#25913;</button>
-                      <button type="button" class="btn btn-sm" onclick="cancelEditComment('${c.id}')">&#21462;&#28040;</button>
+                      <button type="button" class="btn btn-sm btn-primary" onclick="saveEditComment(${idx}, '${c.id}')">\u5132\u5B58\u4FEE\u6539</button>
+                      <button type="button" class="btn btn-sm" onclick="cancelEditComment('${c.id}')">\u53D6\u6D88</button>
                     </div>
                   </div>
                 </div>
@@ -5158,18 +5268,21 @@
           }
 
           let composeAreaHtml = '';
-          if (myVote) {
-            const authorName = currentUser ? escapeHtml(currentUser.name) : '&#26053;&#20276;';
+          if (hasVotedAny) {
+            const authorName = currentUser ? escapeHtml(currentUser.name) : '\u65C5\u4F34';
             composeAreaHtml = `
               <div class="comment-compose-wrap">
-                <input type="text" class="comment-input" id="comment-input-${idx}" placeholder="&#20197;&#12300;${authorName}&#12301;&#30340;&#36523;&#20998;&#30041;&#35328;..." onkeydown="if(event.key==='Enter') submitSpotComment(${idx})">
-                <button type="button" class="btn btn-primary btn-comment-send" onclick="submitSpotComment(${idx})">&#36865;&#20986;</button>
+                <input type="text" class="comment-input" id="comment-input-${idx}" placeholder="\u4EE5\u300C${authorName}\u300D\u7684\u8EAB\u5206\u7559\u8A00..." onkeydown="if(event.key==='Enter') submitSpotComment(${idx})">
+                <button type="button" class="btn btn-primary btn-comment-send" onclick="submitSpotComment(${idx})">\u9001\u51FA</button>
               </div>
             `;
           } else {
+            const lockPrompt = visited
+              ? '\u8ACB\u5148\u5B8C\u6210\u4E0A\u65B9\u6295\u7968\uFF08\u300C\u559C\u6B61/\u4E0D\u559C\u6B61\u300D\u6216\u300C\u60F3\u53BB/\u4E0D\u60F3\u53BB\u300D\uFF09\uFF0C\u5373\u53EF\u767C\u8868\u8A55\u8AD6\u8207\u65C5\u4F34\u8A0E\u8AD6\uFF01'
+              : '\u8ACB\u5148\u5B8C\u6210\u4E0A\u65B9\u300C\uD83D\uDC4D \u60F3\u53BB\u300D\u6216\u300C\uD83D\uDC4E \u4E0D\u60F3\u53BB\u300D\u6295\u7968\uFF0C\u5373\u53EF\u767C\u8868\u8A55\u8AD6\u8207\u65C5\u4F34\u8A0E\u8AD6\uFF01';
             composeAreaHtml = `
               <div class="comment-locked-banner">
-                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>&#35531;&#20808;&#23436;&#25104;&#19978;&#26041;&#12300;&#21916;&#27489;/&#24819;&#21435;&#12301;&#25110;&#12300;&#19981;&#21916;&#27489;/&#27794;&#33288;&#36259;&#12301;&#25237;&#31080;&#65292;&#21363;&#21487;&#30332;&#34920;&#35413;&#35542;&#33287;&#26053;&#20276;&#35342;&#35542;&#65281;</span>
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>${lockPrompt}</span>
               </div>
             `;
           }
@@ -5182,36 +5295,82 @@
           `;
         }
 
+        let voteBarHtml = '';
+        if (visited) {
+          voteBarHtml = `
+            <div class="spot-vote-row">
+              <span class="vote-group-tag tag-visited">\u9020\u8A2A\u5FC3\u5F97</span>
+              <button type="button" class="btn-vote-pill ${myLike === 'like' ? 'active-up' : ''}" onclick="toggleSpotVote(${idx}, 'like', 'like')" title="\u6295 \u559C\u6B61">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                <span>\u559C\u6B61</span>
+                <span class="vote-count">${likeUpList.length}</span>
+              </button>
+              <button type="button" class="btn-vote-pill ${myLike === 'dislike' ? 'active-down' : ''}" onclick="toggleSpotVote(${idx}, 'like', 'dislike')" title="\u6295 \u4E0D\u559C\u6B61">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+                <span>\u4E0D\u559C\u6B61</span>
+                <span class="vote-count">${likeDownList.length}</span>
+              </button>
+              <button type="button" class="btn-social-toggle ${isVotersOpen ? 'active' : ''}" onclick="toggleVotersList(${idx})" title="\u67E5\u770B\u516C\u958B\u6295\u7968\u540D\u55AE">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>\u540D\u55AE</span>
+              </button>
+              <button type="button" class="btn-social-toggle toggle-comments ${isCommentsOpen ? 'active' : ''}" onclick="toggleCommentsList(${idx})" title="\u5C55\u958B\u8A0E\u8AD6\u7559\u8A00">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>\u8A0E\u8AD6</span>
+                <span class="comment-count-badge">${comments.length}</span>
+              </button>
+            </div>
+            <div class="spot-vote-row sub-row">
+              <span class="vote-group-tag tag-pretrip">\u884C\u524D\u610F\u5411</span>
+              <button type="button" class="btn-vote-pill sub-pill locked-pill ${myWant === 'want' ? 'active-up' : ''}" onclick="toggleSpotVote(${idx}, 'want', 'want')" title="\u666F\u9EDE\u5DF2\u6A19\u8A18\u70BA\u5DF2\u9020\u8A2A\uFF0C\u884C\u524D\u610F\u5411\u5DF2\u5C01\u5B58\u7121\u6CD5\u4FEE\u6539">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                <span>\u60F3\u53BB</span>
+                <span class="vote-count">${wantUpList.length}</span>
+              </button>
+              <button type="button" class="btn-vote-pill sub-pill locked-pill ${myWant === 'not_want' ? 'active-down' : ''}" onclick="toggleSpotVote(${idx}, 'want', 'not_want')" title="\u666F\u9EDE\u5DF2\u6A19\u8A18\u70BA\u5DF2\u9020\u8A2A\uFF0C\u884C\u524D\u610F\u5411\u5DF2\u5C01\u5B58\u7121\u6CD5\u4FEE\u6539">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+                <span>\u4E0D\u60F3\u53BB</span>
+                <span class="vote-count">${wantDownList.length}</span>
+              </button>
+            </div>
+
+          `;
+        } else {
+          voteBarHtml = `
+            <div class="spot-vote-row">
+              <button type="button" class="btn-vote-pill ${myWant === 'want' ? 'active-up' : ''}" onclick="toggleSpotVote(${idx}, 'want', 'want')" title="\u6295 \u60F3\u53BB">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                <span>\u60F3\u53BB</span>
+                <span class="vote-count">${wantUpList.length}</span>
+              </button>
+              <button type="button" class="btn-vote-pill ${myWant === 'not_want' ? 'active-down' : ''}" onclick="toggleSpotVote(${idx}, 'want', 'not_want')" title="\u6295 \u4E0D\u60F3\u53BB">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+                <span>\u4E0D\u60F3\u53BB</span>
+                <span class="vote-count">${wantDownList.length}</span>
+              </button>
+              <button type="button" class="btn-social-toggle ${isVotersOpen ? 'active' : ''}" onclick="toggleVotersList(${idx})" title="\u67E5\u770B\u516C\u958B\u6295\u7968\u540D\u55AE">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>\u540D\u55AE</span>
+              </button>
+              <button type="button" class="btn-social-toggle toggle-comments ${isCommentsOpen ? 'active' : ''}" onclick="toggleCommentsList(${idx})" title="\u5C55\u958B\u8A0E\u8AD6\u7559\u8A00">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>\u8A0E\u8AD6</span>
+                <span class="comment-count-badge">${comments.length}</span>
+              </button>
+            </div>
+          `;
+        }
+
         const socialSectionHtml = `
           <div class="spot-social-section">
             <div class="spot-vote-bar">
-              <button type="button" class="btn-vote-pill ${myVote === 'up' ? 'active-up' : ''}" onclick="toggleSpotVote(${idx}, 'up')" title="&#25237; &#21916;&#27489;/&#24819;&#21435;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                <span>&#21916;&#27489;/&#24819;&#21435;</span>
-                <span class="vote-count">${upVotes.length}</span>
-              </button>
-              <button type="button" class="btn-vote-pill ${myVote === 'down' ? 'active-down' : ''}" onclick="toggleSpotVote(${idx}, 'down')" title="&#25237; &#19981;&#21916;&#27489;/&#27794;&#33288;&#36259;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
-                <span>&#19981;&#21916;&#27489;/&#27794;&#33288;&#36259;</span>
-                <span class="vote-count">${downVotes.length}</span>
-              </button>
-              <button type="button" class="btn-social-toggle ${isVotersOpen ? 'active' : ''}" onclick="toggleVotersList(${idx})" title="&#26597;&#30475;&#20844;&#38283;&#25237;&#31080;&#21517;&#21934;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span>&#21517;&#21934;</span>
-              </button>
-              <button type="button" class="btn-social-toggle toggle-comments ${isCommentsOpen ? 'active' : ''}" onclick="toggleCommentsList(${idx})" title="&#23637;&#38283;&#35342;&#35542;&#30041;&#35328;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-2px; margin-right:2px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                <span>&#35342;&#35542;</span>
-                <span class="comment-count-badge">${comments.length}</span>
-              </button>
+              ${voteBarHtml}
             </div>
             ${votersDrawerHtml}
             ${commentsDrawerHtml}
           </div>
         `;
-
-
-        card.innerHTML = `
+card.innerHTML = `
           ${imgHtml}
           <div class="spot-card-body">
             <div class="spot-card-header">
@@ -6920,12 +7079,18 @@
       // Also update Mobile Destination Select Dropdown
       const mobileSelect = document.getElementById('mobile-trip-select');
       if (mobileSelect && tripManager && Array.isArray(tripManager.trips)) {
-        mobileSelect.innerHTML = tripManager.trips.map(trip => {
+        let optionsHtml = tripManager.trips.map(trip => {
           const spotCount = (trip.spots || []).length;
           const itinCount = (trip.itinerary || []).length;
           const isSelected = trip.id === tripManager.activeTripId ? 'selected' : '';
           return `<option value="${trip.id}" ${isSelected}>${trip.icon || '🛫'} ${trip.name} (${spotCount}景點 / ${itinCount}行程)</option>`;
         }).join('');
+
+        // 在下拉選單末端加入新增分頁選項
+        optionsHtml += `<option value="__ADD_NEW_TRIP__">➕ 新增旅遊目的地分頁...</option>`;
+
+        mobileSelect.innerHTML = optionsHtml;
+        mobileSelect.value = tripManager.activeTripId || '';
       }
 
       // Auto-scroll active tab into view smoothly
@@ -7138,6 +7303,15 @@
 
     function handleMobileTripChange(tripId) {
       if (!tripId) return;
+      if (tripId === '__ADD_NEW_TRIP__') {
+        // 重設選單顯示為當前行程，防止選單顯示卡在新增分頁項目
+        const mobileSelect = document.getElementById('mobile-trip-select');
+        if (mobileSelect && tripManager) {
+          mobileSelect.value = tripManager.activeTripId || '';
+        }
+        openAddTripModal();
+        return;
+      }
       switchTrip(tripId);
     }
 
@@ -7213,6 +7387,8 @@
         if (copyOptionsBox) copyOptionsBox.style.display = 'block';
         if (spotsCheckbox) spotsCheckbox.checked = true;
         if (itinCheckbox) itinCheckbox.checked = true;
+        const socialCheckbox = document.getElementById('copy-social-checkbox');
+        if (socialCheckbox) socialCheckbox.checked = true;
 
         const spotCount = (sourceTrip.spots || []).length;
         const itinCount = (sourceTrip.itinerary || []).length;
@@ -7243,7 +7419,10 @@
     }
 
     function updateCopyCheckboxes() {
+      const copySpotsCheckbox = document.getElementById('copy-spots-checkbox');
       const copyItinCheckbox = document.getElementById('copy-itin-checkbox');
+      const copySocialCheckbox = document.getElementById('copy-social-checkbox');
+      const copySocialWrap = document.getElementById('copy-social-wrap');
       const daysWrap = document.getElementById('new-trip-days-input-wrap') || document.getElementById('new-trip-days');
       const daysHint = document.getElementById('new-trip-days-hint');
       const select = document.getElementById('copy-from-trip-select');
@@ -7254,6 +7433,13 @@
       }
       if (daysHint) {
         daysHint.style.display = isCopyingItin ? 'block' : 'none';
+      }
+
+      if (copySocialCheckbox && copySocialWrap && copySpotsCheckbox) {
+        const isCopyingSpots = copySpotsCheckbox.checked;
+        copySocialCheckbox.disabled = !isCopyingSpots;
+        copySocialWrap.style.opacity = isCopyingSpots ? '1' : '0.45';
+        copySocialWrap.style.cursor = isCopyingSpots ? 'pointer' : 'not-allowed';
       }
     }
 
@@ -7278,6 +7464,7 @@
 
       const copySpots = sourceTrip && document.getElementById('copy-spots-checkbox')?.checked;
       const copyItin = sourceTrip && document.getElementById('copy-itin-checkbox')?.checked;
+      const copySocial = sourceTrip && copySpots && document.getElementById('copy-social-checkbox')?.checked;
 
       if (!name) {
         alert('請輸入目的地名稱（例如：日本東京）！');
@@ -7290,6 +7477,15 @@
 
       if (copySpots && Array.isArray(sourceTrip.spots)) {
         spots = JSON.parse(JSON.stringify(sourceTrip.spots));
+        if (!copySocial) {
+          // 若選擇不複製該分頁的「已拜訪/未拜訪」與「投票結果」與「評論」，則預設為景點皆是「未拜訪」與無投票與評論紀錄
+          spots.forEach(spot => {
+            spot['已拜訪'] = 'No';
+            if (spot.visited !== undefined) spot.visited = false;
+            spot.votes = {};
+            spot.comments = [];
+          });
+        }
       }
 
       if (copyItin && Array.isArray(sourceTrip.itinerary)) {
