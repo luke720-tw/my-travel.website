@@ -134,15 +134,10 @@
 
     // 動態將 DOM 注入到現有頁面 (零修改原頁面主體)
     injectUI() {
-      // (1) 注入右下角懸浮按鈕 (FAB)
-      if (!document.getElementById('ta-fab-btn')) {
-        const fab = document.createElement('button');
-        fab.id = 'ta-fab-btn';
-        fab.className = 'ta-fab-btn';
-        fab.title = '開啟旅行助手 (多國語言小卡 / 匯率分帳)';
-        fab.innerHTML = `<span>🌐</span><span class="ta-fab-badge">助手</span>`;
-        fab.onclick = () => this.openModal('cards');
-        document.body.appendChild(fab);
+      // (1) 依使用者需求：完全移除右下角懸浮助手按鈕 (FAB)，小助手功能統一於左上角漢堡選單呈現
+      const existingFab = document.getElementById('ta-fab-btn');
+      if (existingFab) {
+        existingFab.remove();
       }
 
       // (2) 注入側邊欄選項 (若側邊欄存在)
@@ -287,20 +282,20 @@
 
       container.innerHTML = `
         <div class="ta-calc-card">
-          <!-- 頂部幣別切換與更新狀態 -->
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div>
-              <div style="font-weight:800; font-size:0.95rem; color:var(--text-main);">💱 即時外幣換算 ⇄ 新台幣</div>
+          <!-- 頂部幣別切換與更新狀態 (具備響應式換行與 flex-shrink 防擠壓保護) -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px; width:100%; box-sizing:border-box;">
+            <div style="min-width:0;">
+              <div style="font-weight:800; font-size:0.95rem; color:var(--text-main); white-space:nowrap;">💱 即時外幣換算 ⇄ 新台幣</div>
               <div id="ta-rate-status-badge" style="font-size:0.72rem; margin-top:2px;"></div>
             </div>
-            <select id="ta-curr-select" class="ta-input-field" style="width:auto; padding:5px 12px; font-size:0.84rem; font-weight:700;" onchange="TravelAssistantAddon.onCurrencyChange(this.value)">
+            <select id="ta-curr-select" class="ta-input-field" style="width:auto; max-width:100%; padding:6px 12px; font-size:0.84rem; font-weight:700; cursor:pointer;" onchange="TravelAssistantAddon.onCurrencyChange(this.value)">
               ${currOptionsHtml}
             </select>
           </div>
 
           <!-- 核心基準匯率展示：以新台幣 1 元 (1 TWD) 為主顯示 -->
-          <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:12px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
+          <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:12px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; width:100%; box-sizing:border-box;">
+            <div style="min-width:0;">
               <div style="font-size:0.75rem; color:var(--text-muted);">基準匯率 (以新台幣 1 元計)：</div>
               <div style="font-size:1.1rem; font-weight:900; color:var(--accent);">
                 1 TWD ≈ <span id="ta-twd-base-val">${twdBaseRate}</span> ${curr}
@@ -309,27 +304,27 @@
                 (反向參考：1 ${curr} ≈ ${inverseRate} TWD)
               </div>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button class="ta-btn-sm" onclick="TravelAssistantAddon.fetchLiveRates()" title="重新抓取最新牌價" style="padding:4px 8px; font-size:0.75rem;">🔄 更新</button>
-              <button class="ta-btn-sm" onclick="TravelAssistantAddon.promptCustomRate()" title="手動設定匯率" style="padding:4px 8px; font-size:0.75rem;">自訂</button>
+            <div style="display:flex; gap:6px; flex-shrink:0;">
+              <button class="ta-btn-sm" onclick="TravelAssistantAddon.fetchLiveRates()" title="重新抓取最新牌價" style="padding:5px 10px; font-size:0.75rem;">🔄 更新</button>
+              <button class="ta-btn-sm" onclick="TravelAssistantAddon.promptCustomRate()" title="手動設定匯率" style="padding:5px 10px; font-size:0.75rem;">自訂</button>
             </div>
           </div>
 
-          <!-- 換算輸入欄 -->
-          <div class="ta-input-row">
-            <div style="flex:1; position:relative;">
-              <input type="number" id="ta-calc-foreign" class="ta-input-field" style="width:100%; padding-right:56px;" placeholder="輸入金額" value="${currInfo.defaultVal}" oninput="TravelAssistantAddon.updateCurrencyCalc()">
-              <span id="ta-calc-symbol-tag" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:0.75rem; font-weight:800; color:var(--text-muted);">${curr}</span>
+          <!-- 換算輸入欄 (全面採用 box-sizing 與 min-width:0 保護) -->
+          <div class="ta-input-row" style="display:flex; align-items:center; gap:8px; margin-bottom:12px; width:100%; box-sizing:border-box;">
+            <div style="flex:1; min-width:0; position:relative;">
+              <input type="number" id="ta-calc-foreign" class="ta-input-field" style="width:100%; box-sizing:border-box; padding-right:56px;" placeholder="輸入金額" value="${currInfo.defaultVal}" oninput="TravelAssistantAddon.updateCurrencyCalc()">
+              <span id="ta-calc-symbol-tag" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:0.75rem; font-weight:800; color:var(--text-muted); pointer-events:none;">${curr}</span>
             </div>
-            <span style="font-weight:800; font-size:1.1rem;">≈</span>
-            <div id="ta-calc-twd" class="ta-input-field" style="background:rgba(255,255,255,0.06); display:flex; align-items:center;">
+            <span style="font-weight:800; font-size:1.1rem; flex-shrink:0;">≈</span>
+            <div id="ta-calc-twd" class="ta-input-field" style="flex:1; min-width:0; box-sizing:border-box; background:rgba(255,255,255,0.06); display:flex; align-items:center; font-size:1rem; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
               NT$ ${Math.round(currInfo.defaultVal / twdBaseRate).toLocaleString()}
             </div>
           </div>
 
           <!-- 匯率官網外部查詢連結 -->
-          <div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--border-color); display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <span style="font-size:0.75rem; color:var(--text-muted);">🔗 匯率查詢官網：</span>
+          <div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--border-color); display:flex; gap:8px; align-items:center; flex-wrap:wrap; width:100%; box-sizing:border-box;">
+            <span style="font-size:0.75rem; color:var(--text-muted); flex-shrink:0;">🔗 匯率查詢官網：</span>
             <a href="https://rate.bot.com.tw/xrt?Lang=zh-TW" target="_blank" class="ta-btn-sm" style="text-decoration:none; color:var(--accent); font-weight:700;">
               🏦 台灣銀行牌告匯率 ↗
             </a>
@@ -342,17 +337,17 @@
         <!-- 旅伴快速平攤分帳 (自動換算新台幣) -->
         <div class="ta-calc-card">
           <div style="font-weight:800; margin-bottom:8px; font-size:0.92rem;">⚖️ 旅伴快速平攤分帳 (<span id="ta-split-curr-name">${currInfo.name}</span>)</div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
-            <div>
-              <label style="font-size:0.75rem; color:var(--text-muted);">總花費 (<span id="ta-split-curr-code">${curr}</span>)</label>
-              <input type="number" id="ta-split-foreign" class="ta-input-field" value="${currInfo.defaultSplit}" oninput="TravelAssistantAddon.updateSplitCalc()">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px; width:100%; box-sizing:border-box;">
+            <div style="min-width:0;">
+              <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">總花費 (<span id="ta-split-curr-code">${curr}</span>)</label>
+              <input type="number" id="ta-split-foreign" class="ta-input-field" style="width:100%; box-sizing:border-box;" value="${currInfo.defaultSplit}" oninput="TravelAssistantAddon.updateSplitCalc()">
             </div>
-            <div>
-              <label style="font-size:0.75rem; color:var(--text-muted);">分攤人數</label>
-              <input type="number" id="ta-split-people" class="ta-input-field" value="2" min="1" oninput="TravelAssistantAddon.updateSplitCalc()">
+            <div style="min-width:0;">
+              <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">分攤人數</label>
+              <input type="number" id="ta-split-people" class="ta-input-field" style="width:100%; box-sizing:border-box;" value="2" min="1" oninput="TravelAssistantAddon.updateSplitCalc()">
             </div>
           </div>
-          <div id="ta-split-result" style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:10px; text-align:center; font-size:0.86rem; font-weight:700; color:var(--accent);">
+          <div id="ta-split-result" style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:10px; text-align:center; font-size:0.86rem; font-weight:700; color:var(--accent); width:100%; box-sizing:border-box;">
             每人應分攤：${currInfo.symbol}${(currInfo.defaultSplit / 2).toLocaleString()} (約 NT$ ${Math.round((currInfo.defaultSplit / 2) / twdBaseRate).toLocaleString()})
           </div>
         </div>
