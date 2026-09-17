@@ -1,7 +1,7 @@
-{
-  "name": "Luke旅遊紀錄",
-  "short_name": "Luke旅遊紀錄",
-  "description": "智慧旅遊行程規劃與觀光景點指南",
+﻿{
+  "name": "Luke??蝝??,
+  "short_name": "Luke??蝝??,
+  "description": "撠惇??銵?閬????暺恣??,
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -10,13 +10,13 @@
   "theme_color": "#0f172a",
   "icons": [
     {
-      "src": "images.png",
+      "src": "./apple-touch-icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "images.png",
+      "src": "./apple-touch-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

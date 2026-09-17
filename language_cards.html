@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🌐 多國語言旅行小卡 (日語 / 韓語 / 英語)</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;700;900&family=Noto+Sans+KR:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --primary-light: #ede9fe;
+      --accent-jp: #ef4444;
+      --accent-kr: #0ea5e9;
+      --accent-en: #10b981;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #0f172a;
+      --bg-card: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-light: #64748b;
+      --primary: #a78bfa;
+      --primary-hover: #8b5cf6;
+      --primary-light: rgba(167, 139, 250, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
+      background: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 30px;
+    }
+
+    /* 頂部導覽列 */
+    header {
+      width: 100%;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-toggle-btn {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* 主內容容器 */
+    .app-wrap {
+      width: 100%;
+      max-width: 640px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* 語言切換 Segmented Pills */
+    .lang-switcher-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 6px;
+      display: flex;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .lang-pill-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 10px 0;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .lang-pill-btn.active[data-lang="ja"] {
+      background: #fee2e2;
+      color: #b91c1c;
+      box-shadow: var(--shadow-sm);
+    }
+    .lang-pill-btn.active[data-lang="ko"] {
+      background: #e0f2fe;
+      color: #0369a1;
+      box-shadow: var(--shadow-sm);
+    }
+    .lang-pill-btn.active[data-lang="en"] {
+      background: #dcfce7;
+      color: #15803d;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* 組句結果面板 (動態句子卡) */
+    .sentence-board {
+      background: var(--bg-card);
+      border: 2px dashed var(--border-color);
+      border-radius: 20px;
+      padding: 18px;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .board-empty-hint {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .board-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .board-meaning-tag {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .btn-sound {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: none;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .board-big-text {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--text-main);
+      margin: 6px 0;
+      line-height: 1.35;
+    }
+
+    .board-harmonic-text {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #d97706;
+      margin-bottom: 4px;
+    }
+
+    .board-romaji-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .board-actions-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-action-primary {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: #ffffff;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+    }
+
+    .btn-action-clear {
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* 情境分類按鈕列 (左右滑動導航) */
+    .category-nav-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .cat-nav-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      z-index: 5;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .cat-nav-btn:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      transform: scale(1.08);
+    }
+
+    .cat-nav-btn:active {
+      transform: scale(0.92);
+    }
+
+    .category-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      cursor: grab;
+      user-select: none;
+      flex: 1;
+    }
+
+    .category-scroll.grabbing {
+      cursor: grabbing;
+      scroll-behavior: auto;
+    }
+
+    .category-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-pill {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .cat-pill.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+    }
+
+    /* 詞彙卡片網格 */
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    @media (min-width: 480px) {
+      .vocab-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .word-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.15s;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .word-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .word-card:active {
+      transform: scale(0.97);
+    }
+
+    .word-card-zh {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .word-card-target {
+      font-size: 0.82rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .word-card-harmonic {
+      font-size: 0.72rem;
+      color: #d97706;
+      font-weight: 500;
+    }
+
+    /* 全螢幕大字出示模態視窗 */
+    .fs-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #ffffff;
+      color: #0f172a;
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .fs-modal.active {
+      display: flex;
+    }
+
+    .fs-close-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+      font-size: 1.6rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fs-tip {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #8b5cf6;
+      background: #ede9fe;
+      padding: 6px 18px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+    }
+
+    .fs-target-text {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.35;
+      margin-bottom: 16px;
+    }
+
+    .fs-harmonic-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #d97706;
+      margin-bottom: 8px;
+    }
+
+    .fs-zh-text {
+      font-size: 1.2rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <span>🌐</span> 多國語言旅行小卡
+    </div>
+    <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️ 淺色</button>
+  </header>
+
+  <div class="app-wrap">
+
+    <!-- 語言切換三標籤 -->
+    <div class="lang-switcher-card">
+      <button class="lang-pill-btn active" data-lang="ja" onclick="setLanguage('ja')">
+        <span>🇯🇵</span> 日語 (Japanese)
+      </button>
+      <button class="lang-pill-btn" data-lang="ko" onclick="setLanguage('ko')">
+        <span>🇰🇷</span> 韓語 (Korean)
+      </button>
+      <button class="lang-pill-btn" data-lang="en" onclick="setLanguage('en')">
+        <span>🇺🇸</span> 英語 (English)
+      </button>
+    </div>
+
+    <!-- 動態組句展示面板 -->
+    <div class="sentence-board" id="sentenceBoard">
+      <div class="board-empty-hint">
+        💬 點選下方詞彙自動加到這裡（最多 3 句）<br>
+        支援動態組句、多國語言真人發音與全螢幕大字出示
+      </div>
+    </div>
+
+    <!-- 7 大情境分類標籤 (支援左右滑動與導航箭頭) -->
+    <div class="category-nav-wrapper">
+      <button type="button" class="cat-nav-btn" onclick="scrollCategory(-180)" title="向左滑動">‹</button>
+      <div class="category-scroll" id="catScroll">
+        <button class="cat-pill active" data-cat="basic" onclick="setCategory('basic')">基本禮貌</button>
+        <button class="cat-pill" data-cat="dining" onclick="setCategory('dining')">餐飲美食</button>
+        <button class="cat-pill" data-cat="shopping" onclick="setCategory('shopping')">購物退稅</button>
+        <button class="cat-pill" data-cat="transport" onclick="setCategory('transport')">交通問路</button>
+        <button class="cat-pill" data-cat="facility" onclick="setCategory('facility')">公共設施</button>
+        <button class="cat-pill" data-cat="hotel" onclick="setCategory('hotel')">飯店住宿</button>
+        <button class="cat-pill" data-cat="emergency" onclick="setCategory('emergency')">緊急應對</button>
+      </div>
+      <button type="button" class="cat-nav-btn" onclick="scrollCategory(180)" title="向右滑動">›</button>
+    </div>
+
+    <!-- 詞彙網格 -->
+    <div class="vocab-grid" id="vocabGrid"></div>
+
+  </div>
+
+  <!-- 全螢幕大字視窗 (拿給店員看) -->
+  <div class="fs-modal" id="fsModal">
+    <button class="fs-close-btn" onclick="closeFullscreen()">✕</button>
+    <div class="fs-tip">📱 請直接將螢幕出示給店員或路人查看</div>
+    <div class="fs-target-text" id="fsTargetText">すみません</div>
+    <div class="fs-harmonic-text" id="fsHarmonicText">斯咪媽現</div>
+    <div class="fs-zh-text" id="fsZhText">不好意思</div>
+  </div>
+
+  <script>
+    // 多國語言詞庫資料庫
+    const LanguageDB = {
+      ja: {
+        code: 'ja-JP',
+        name: '日語',
+        rate: 0.85,
+        categories: {
+          basic: [
+            { zh: "你好", target: "こんにちは", romaji: "Konnichiwa", harmonic: "空尼基哇" },
+            { zh: "謝謝", target: "ありがとうございます", romaji: "Arigatou gozaimasu", harmonic: "阿里嘎多 鍋砸一媽斯" },
+            { zh: "不好意思", target: "すみません", romaji: "Sumimasen", harmonic: "斯咪媽現" },
+            { zh: "拜託了 / 請", target: "お願いします", romaji: "Onegaishimasu", harmonic: "歐內嘎以喜媽斯" },
+            { zh: "是 / 對的", target: "はい", romaji: "Hai", harmonic: "嗨" },
+            { zh: "不是 / 不用", target: "いいえ / 結構です", romaji: "Iie / Kekkou desu", harmonic: "以ㄟ / 顆扣跌斯" },
+            { zh: "對不起", target: "ごめんなさい", romaji: "Gomennasai", harmonic: "果門那賽" },
+            { zh: "沒關係", target: "大丈夫です", romaji: "Daijoubu desu", harmonic: "代究補跌斯" },
+            { zh: "你會說英文嗎？", target: "英語は話せますか？", romaji: "Eigo wa hanasemasu ka?", harmonic: "欸勾哇 哈那協媽斯卡？" }
+          ],
+          dining: [
+            { zh: "請給我這個", target: "これをください", romaji: "Kore o kudasai", harmonic: "口蕾 歐 哭打賽" },
+            { zh: "主廚推薦是什麼？", target: "おすすめは何ですか？", romaji: "Osusume wa nan desu ka?", harmonic: "歐蘇蘇妹 哇 難 跌斯卡？" },
+            { zh: "買單結帳", target: "お会計をお願いします", romaji: "Okaikei o onegaishimasu", harmonic: "歐開給 歐 歐內嘎以喜媽斯" },
+            { zh: "請分開結帳", target: "別々でお願いします", romaji: "Betsubetsu de onegaishimasu", harmonic: "北滋北滋 跌 歐內嘎以喜媽斯" },
+            { zh: "請給我冰水", target: "お冷をお願いします", romaji: "Ohya o onegaishimasu", harmonic: "歐hi壓 歐 歐內嘎以喜媽斯" },
+            { zh: "外帶", target: "テイクアウトで", romaji: "Teiku auto de", harmonic: "貼哭 奧托 跌" },
+            { zh: "內用", target: "店内で", romaji: "Tennai de", harmonic: "ten乃 跌" },
+            { zh: "很好吃！", target: "とても美味しいです！", romaji: "Totemo oishii desu!", harmonic: "透貼摸 歐一西 跌斯！" }
+          ],
+          shopping: [
+            { zh: "多少錢？", target: "いくらですか？", romaji: "Ikura desu ka?", harmonic: "依哭拉 跌斯卡？" },
+            { zh: "可以退稅嗎？", target: "免税できますか？", romaji: "Menzei dekimasu ka?", harmonic: "面賊 跌ki媽斯卡？" },
+            { zh: "可以刷卡嗎？", target: "カードは使えますか？", romaji: "Kaado wa tsukaemasu ka?", harmonic: "卡朵 哇 滋卡欸媽斯卡？" },
+            { zh: "可以用Suica嗎？", target: "Suicaは使えますか？", romaji: "Suica wa tsukaemasu ka?", harmonic: "水卡 哇 滋卡欸媽斯卡？" },
+            { zh: "不需要塑膠袋", target: "レジ袋はいりません", romaji: "Rejibukuro wa irimasen", harmonic: "蕾吉布哭漏 哇 依立媽線" },
+            { zh: "可以試穿嗎？", target: "試着してもいいですか？", romaji: "Shichaku shite mo ii desu ka?", harmonic: "西恰哭 西貼 摸 以跌斯卡？" }
+          ],
+          transport: [
+            { zh: "車站", target: "駅", romaji: "Eki", harmonic: "欸ki" },
+            { zh: "剪票口", target: "改札口", romaji: "Kaisatsuguchi", harmonic: "開撒滋古七" },
+            { zh: "在哪裡？", target: "どこですか？", romaji: "Doko desu ka?", harmonic: "多口 跌斯卡？" },
+            { zh: "我想去這裡", target: "ここに行きたいです", romaji: "Koko ni ikitai desu", harmonic: "口口 你 一ki他以 跌斯" },
+            { zh: "幾號月台？", target: "何番線ですか？", romaji: "Nanbansen desu ka?", harmonic: "難榜賢 跌斯卡？" }
+          ],
+          facility: [
+            { zh: "廁所", target: "トイレ", romaji: "Toire", harmonic: "透依蕾" },
+            { zh: "置物櫃", target: "コインロッカー", romaji: "Koin rokkaa", harmonic: "口應 樓卡" },
+            { zh: "電梯", target: "エレベーター", romaji: "Erebeetaa", harmonic: "欸蕾北踏" },
+            { zh: "ATM", target: "ATM", romaji: "ATM", harmonic: "ATM" },
+            { zh: "服務台", target: "インフォメーション", romaji: "Infomeeshon", harmonic: "應佛妹宣" }
+          ],
+          hotel: [
+            { zh: "辦理入住", target: "チェックインをお願いします", romaji: "Chekku-in o onegaishimasu", harmonic: "切哭應 歐 歐內嘎以喜媽斯" },
+            { zh: "辦理退房", target: "チェックアウトをお願いします", romaji: "Chekku-auto o onegaishimasu", harmonic: "切哭奧托 歐 歐內嘎以喜媽斯" },
+            { zh: "寄放行李", target: "荷物を預かっていただけますか？", romaji: "Nimotsu o azukatte itadakemasu ka?", harmonic: "逆摸滋 歐 阿滋卡貼 以他打顆媽斯卡？" },
+            { zh: "Wi-Fi密碼", target: "Wi-Fiのパスワードは何ですか？", romaji: "Waifai no pasuwaado wa nan desu ka?", harmonic: "歪壞 弄 怕斯哇朵 哇 難跌斯卡？" }
+          ],
+          emergency: [
+            { zh: "請救救我！", target: "助けてください！", romaji: "Tasukete kudasai!", harmonic: "他斯顆貼 哭打賽！" },
+            { zh: "我不舒服", target: "体調が悪いです", romaji: "Taichou ga warui desu", harmonic: "台秋 嘎 哇路以 跌斯" },
+            { zh: "請叫救護車", target: "救急車を呼んでください", romaji: "Kyuukyuusha o yonde kudasai", harmonic: "Q Q 下 歐 擁跌 哭打賽" },
+            { zh: "東西掉了", target: "物を落としました", romaji: "Mono o otoshimashita", harmonic: "摸弄 歐 歐透西媽西打" },
+            { zh: "護照遺失了", target: "パスポートを紛失しました", romaji: "Pasupooto o funshitsu shimashita", harmonic: "怕斯坡托 歐 奮西滋 西媽西打" }
+          ]
+        }
+      },
+      ko: {
+        code: 'ko-KR',
+        name: '韓語',
+        rate: 0.85,
+        categories: {
+          basic: [
+            { zh: "你好", target: "안녕하세요", romaji: "Annyeonghaseyo", harmonic: "安妞哈誰呦" },
+            { zh: "謝謝", target: "감사합니다", romaji: "Gamsahamnida", harmonic: "康撒哈咪達" },
+            { zh: "不好意思 / 對不起", target: "죄송합니다", romaji: "Joesonghamnida", harmonic: "催松哈咪達" },
+            { zh: "拜託了 / 請", target: "부탁합니다", romaji: "Butakhamnida", harmonic: "不塔卡咪達" },
+            { zh: "是 / 對", target: "네", romaji: "Ne", harmonic: "內" },
+            { zh: "不是 / 不用", target: "아니요 / 괜찮아요", romaji: "Aniyo / Gwaenchanhayo", harmonic: "阿逆呦 / 快洽哪呦" },
+            { zh: "沒關係", target: "괜찮아요", romaji: "Gwaenchanhayo", harmonic: "快洽哪呦" },
+            { zh: "你會說英文嗎？", target: "영어 할 수 있어요?", romaji: "Yeongeo hal su isseoyo?", harmonic: "詠歐 哈蘇以搜呦？" }
+          ],
+          dining: [
+            { zh: "請給我這個", target: "이거 주세요", romaji: "Igeo juseyo", harmonic: "以勾 租誰呦" },
+            { zh: "推薦菜色是什麼？", target: "추천 메뉴가 뭐예요?", romaji: "Chucheon menyuga mwoyeyo?", harmonic: "秋天 妹牛嘎 摸也呦？" },
+            { zh: "買單結帳", target: "계산해 주세요", romaji: "Gyesanhae juseyo", harmonic: "給散黑 租誰呦" },
+            { zh: "分開結帳", target: "따로 계산해 주세요", romaji: "Ttaro gyesanhae juseyo", harmonic: "打樓 給散黑 租誰呦" },
+            { zh: "請給我水", target: "물 좀 주세요", romaji: "Mul jom juseyo", harmonic: "木中 租誰呦" },
+            { zh: "外帶", target: "포장해 주세요", romaji: "Pojanghae juseyo", harmonic: "頗將黑 租誰呦" },
+            { zh: "內用", target: "먹고 갈게요", romaji: "Meokgo galgeyo", harmonic: "摸勾 考給呦" },
+            { zh: "很好吃！", target: "너무 맛있어요!", romaji: "Neomu masisseoyo!", harmonic: "諾姆 媽西搜呦！" }
+          ],
+          shopping: [
+            { zh: "多少錢？", target: "얼마예요?", romaji: "Eolmayeyo?", harmonic: "歐媽也呦？" },
+            { zh: "可以退稅嗎？", target: "택스리펀 되나요?", romaji: "Taekseuripeon doenayo?", harmonic: "Tax Refund 推那呦？" },
+            { zh: "可以刷卡嗎？", target: "카드 돼요?", romaji: "Kadeu dwaeyo?", harmonic: "卡得 推呦？" },
+            { zh: "不用袋子", target: "봉투 필요 없어요", romaji: "Bongtu piryo eopseoyo", harmonic: "崩土 批立歐 歐搜呦" },
+            { zh: "可以試穿嗎？", target: "입어봐도 돼요?", romaji: "Ibeobwado dwaeyo?", harmonic: "以伯巴朵 推呦？" }
+          ],
+          transport: [
+            { zh: "車站", target: "역", romaji: "Yeok", harmonic: "油客" },
+            { zh: "地鐵站", target: "지하철역", romaji: "Jihacheolyeok", harmonic: "地下鐵油客" },
+            { zh: "在哪裡？", target: "어디예요?", romaji: "Eodiyeyo?", harmonic: "歐低也呦？" },
+            { zh: "請去這裡", target: "여기로 가주세요", romaji: "Yeogiro gajuseyo", harmonic: "油gi樓 卡租誰呦" },
+            { zh: "計程車", target: "택시", romaji: "Taeksi", harmonic: "泰克西" }
+          ],
+          facility: [
+            { zh: "廁所", target: "화장실", romaji: "Hwajangsil", harmonic: "花張洗" },
+            { zh: "置物櫃", target: "보관함", romaji: "Boganham", harmonic: "波關韓" },
+            { zh: "電梯", target: "엘리베이터", romaji: "Ellibeiteo", harmonic: "欸立北依托" },
+            { zh: "ATM", target: "ATM", romaji: "ATM", harmonic: "ATM" },
+            { zh: "服務台", target: "안내소", romaji: "Annaeso", harmonic: "安內搜" }
+          ],
+          hotel: [
+            { zh: "辦理入住", target: "체크인 할게요", romaji: "Chekeu-in halgeyo", harmonic: "切克應 哈給呦" },
+            { zh: "辦理退房", target: "체크아웃 할게요", romaji: "Chekeu-aut halgeyo", harmonic: "切克奧 哈給呦" },
+            { zh: "可以寄放行李嗎？", target: "짐을 맡길 수 있나요?", romaji: "Jimeul matgil su innayo?", harmonic: "基悶 媽gi 蘇 印那呦？" },
+            { zh: "Wi-Fi密碼", target: "와이파이 비밀번호", romaji: "Waipai bimilbeonho", harmonic: "歪拍 秘密崩厚" }
+          ],
+          emergency: [
+            { zh: "請救救我！", target: "도와주세요!", romaji: "Dowajuseyo!", harmonic: "偷哇租誰呦！" },
+            { zh: "我不舒服", target: "몸이 아파요", romaji: "Momi apayo", harmonic: "某咪 阿怕呦" },
+            { zh: "請叫救護車", target: "구급차 불러주세요", romaji: "Gugeupcha bulleojuseyo", harmonic: "哭格差 不漏租誰呦" },
+            { zh: "護照不見了", target: "여권을 잃어버렸어요", romaji: "Yeogwoneul ileobeoryeosseoyo", harmonic: "優滾呢 一樓波溜搜呦" }
+          ]
+        }
+      },
+      en: {
+        code: 'en-US',
+        name: '英語',
+        rate: 0.9,
+        categories: {
+          basic: [
+            { zh: "你好 / 早安", target: "Hello / Good morning", romaji: "Hello", harmonic: "哈囉" },
+            { zh: "非常感謝你", target: "Thank you very much", romaji: "Thank you", harmonic: "三Q 歪哩 罵曲" },
+            { zh: "不好意思 / 借過", target: "Excuse me", romaji: "Excuse me", harmonic: "愛客斯Q斯 密" },
+            { zh: "請 / 拜託了", target: "Please", romaji: "Please", harmonic: "普力斯" },
+            { zh: "是的", target: "Yes, sure", romaji: "Yes", harmonic: "夜斯 秀兒" },
+            { zh: "不，謝謝 / 不用了", target: "No, thank you", romaji: "No thanks", harmonic: "No, 三Q" },
+            { zh: "對不起", target: "I'm sorry", romaji: "Sorry", harmonic: "愛目 搜蕊" },
+            { zh: "沒問題 / 不客氣", target: "No problem / You're welcome", romaji: "No problem", harmonic: "No 普羅布冷" }
+          ],
+          dining: [
+            { zh: "請給我這個", target: "Can I have this one, please?", romaji: "This one please", harmonic: "肯 愛 海福 滴斯 萬" },
+            { zh: "有推薦的嗎？", target: "What do you recommend?", romaji: "Recommend?", harmonic: "瓦特 肚 尤 雷克門得？" },
+            { zh: "買單結帳", target: "Check, please / Bill, please", romaji: "Check please", harmonic: "切克 普力斯" },
+            { zh: "分開結帳", target: "Separate checks, please", romaji: "Separate checks", harmonic: "賽普銳特 切克斯" },
+            { zh: "請給我水", target: "Water, please", romaji: "Water please", harmonic: "瓦特 普力斯" },
+            { zh: "外帶", target: "To go / Take away, please", romaji: "To go please", harmonic: "吐 勾 普力斯" },
+            { zh: "內用", target: "For here, please", romaji: "For here", harmonic: "佛 喜爾 普力斯" },
+            { zh: "非常美味！", target: "It's really delicious!", romaji: "Delicious!", harmonic: "乙次 蕊莉 的立穴斯！" }
+          ],
+          shopping: [
+            { zh: "這個多少錢？", target: "How much is this?", romaji: "How much?", harmonic: "好 罵曲 意思 滴斯？" },
+            { zh: "可以退稅嗎？", target: "Is tax-free available?", romaji: "Tax-free?", harmonic: "意思 太克斯 夫利？" },
+            { zh: "可以刷信用卡嗎？", target: "Do you take credit cards?", romaji: "Credit card?", harmonic: "肚 尤 太克 客瑞迪特 卡得？" },
+            { zh: "我不需要塑膠袋", target: "No bag needed, thanks", romaji: "No bag", harmonic: "No 拜克 逆跌得" },
+            { zh: "我可以試穿嗎？", target: "Can I try this on?", romaji: "Try this on?", harmonic: "肯 愛 揣 滴斯 昂？" }
+          ],
+          transport: [
+            { zh: "車站在哪裡？", target: "Where is the station?", romaji: "Where is station?", harmonic: "毀爾 意思 的 史貼選？" },
+            { zh: "我想去這裡", target: "I'd like to go here", romaji: "Go here", harmonic: "愛的 賴克 吐 勾 喜爾" },
+            { zh: "售票處", target: "Ticket office", romaji: "Ticket office", harmonic: "梯客特 歐非斯" },
+            { zh: "計程車", target: "Taxi, please", romaji: "Taxi", harmonic: "太客西 普力斯" }
+          ],
+          facility: [
+            { zh: "洗手間在哪裡？", target: "Where is the restroom?", romaji: "Restroom?", harmonic: "毀爾 意思 的 瑞斯特倫？" },
+            { zh: "寄物櫃", target: "Coin lockers", romaji: "Lockers", harmonic: "口應 樓客爾斯" },
+            { zh: "電梯", target: "Elevator / Lift", romaji: "Elevator", harmonic: "愛勒非特" },
+            { zh: "服務處", target: "Information desk", romaji: "Information", harmonic: "應佛妹選 跌斯客" }
+          ],
+          hotel: [
+            { zh: "辦理入住", target: "Check-in, please", romaji: "Check in", harmonic: "切克 應 普力斯" },
+            { zh: "辦理退房", target: "Check-out, please", romaji: "Check out", harmonic: "切克 奧特 普力斯" },
+            { zh: "可以寄放行李嗎？", target: "Can I leave my luggage here?", romaji: "Leave luggage?", harmonic: "肯 愛 立福 買 拉給居 喜爾？" },
+            { zh: "Wi-Fi 密碼", target: "What's the Wi-Fi password?", romaji: "Wi-Fi password?", harmonic: "瓦次 的 歪壞 怕斯握得？" }
+          ],
+          emergency: [
+            { zh: "請救救我！", target: "Help me, please!", romaji: "Help me!", harmonic: "嗨爾普 密 普力斯！" },
+            { zh: "我不舒服 / 生病了", target: "I feel sick", romaji: "Feel sick", harmonic: "愛 肥歐 西客" },
+            { zh: "請幫忙叫救護車", target: "Please call an ambulance", romaji: "Call ambulance", harmonic: "普力斯 扣 恩 安比優浪斯" },
+            { zh: "我遺失了護照", target: "I lost my passport", romaji: "Lost passport", harmonic: "愛 樓斯特 買 怕斯坡特" }
+          ]
+        }
+      }
+    };
+
+    let currentLang = 'ja';
+    let currentCat = 'basic';
+    let selectedPieces = [];
+
+    function init() {
+      renderVocabGrid();
+      renderSentenceBoard();
+      setupCategoryDragScroll();
+      setupSwipeGesture();
+    }
+
+    // 滑鼠按住拖拉滑動 (Drag-to-Scroll)
+    function setupCategoryDragScroll() {
+      const slider = document.getElementById('catScroll');
+      if (!slider) return;
+      let isDown = false;
+      let startX = 0;
+      let scrollLeft = 0;
+
+      slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.classList.add('grabbing');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDown) {
+          isDown = false;
+          slider.classList.remove('grabbing');
+        }
+      });
+
+      slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        slider.scrollLeft = scrollLeft - walk;
+      });
+    }
+
+    // 手機觸控卡片區左右滑動手勢 (Swipe Gesture) 切換情境
+    function setupSwipeGesture() {
+      const grid = document.getElementById('vocabGrid');
+      if (!grid) return;
+      const cats = ['basic', 'dining', 'shopping', 'transport', 'facility', 'hotel', 'emergency'];
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      grid.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      grid.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+
+        // 水平滑動大於 60px 且垂直位移小於 50px
+        if (Math.abs(diffX) > 60 && Math.abs(diffY) < 50) {
+          const currentIndex = cats.indexOf(currentCat);
+          if (diffX < 0 && currentIndex < cats.length - 1) {
+            // 向左滑 ➔ 下一個分類
+            setCategory(cats[currentIndex + 1]);
+          } else if (diffX > 0 && currentIndex > 0) {
+            // 向右滑 ➔ 上一個分類
+            setCategory(cats[currentIndex - 1]);
+          }
+        }
+      }, { passive: true });
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      selectedPieces = [];
+      document.querySelectorAll('.lang-pill-btn').forEach(btn => {
+        if (btn.getAttribute('data-lang') === lang) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      renderVocabGrid();
+      renderSentenceBoard();
+    }
+
+    function setCategory(cat) {
+      currentCat = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.classList.add('active');
+          // 點選時平滑滾動至可視中央
+          btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      renderVocabGrid();
+    }
+
+    // 左右導航按鈕點擊捲動
+    function scrollCategory(offset) {
+      const scrollEl = document.getElementById('catScroll');
+      if (scrollEl) {
+        scrollEl.scrollBy({ left: offset, behavior: 'smooth' });
+      }
+    }
+
+    function renderVocabGrid() {
+      const grid = document.getElementById('vocabGrid');
+      const list = LanguageDB[currentLang].categories[currentCat] || [];
+      grid.innerHTML = list.map((item, idx) => `
+        <div class="word-card" onclick="addPiece(${idx})">
+          <div class="word-card-zh">${item.zh}</div>
+          <div class="word-card-target">${item.target}</div>
+          <div class="word-card-harmonic">🗣️ ${item.harmonic}</div>
+        </div>
+      `).join('');
+    }
+
+    function addPiece(idx) {
+      const item = LanguageDB[currentLang].categories[currentCat][idx];
+      if (!item) return;
+      if (selectedPieces.length >= 3) {
+        selectedPieces.shift();
+      }
+      selectedPieces.push(item);
+      renderSentenceBoard();
+    }
+
+    function clearPieces() {
+      selectedPieces = [];
+      renderSentenceBoard();
+    }
+
+    function renderSentenceBoard() {
+      const board = document.getElementById('sentenceBoard');
+      if (selectedPieces.length === 0) {
+        board.innerHTML = `
+          <div class="board-empty-hint">
+            💬 點選下方詞彙自動加到這裡（最多 3 句）<br>
+            支援動態組句、${LanguageDB[currentLang].name}真人發音與全螢幕大字出示
+          </div>
+        `;
+        return;
+      }
+
+      const fullTarget = selectedPieces.map(p => p.target).join(' ');
+      const fullHarmonic = selectedPieces.map(p => p.harmonic).join(' ・ ');
+      const fullRomaji = selectedPieces.map(p => p.romaji).join(' ');
+      const fullZh = selectedPieces.map(p => p.zh).join(' + ');
+
+      board.innerHTML = `
+        <div class="board-card-top">
+          <span class="board-meaning-tag">中文：${fullZh}</span>
+          <button class="btn-sound" onclick="speakText('${fullTarget}')">
+            🔊 聽${LanguageDB[currentLang].name}發音
+          </button>
+        </div>
+        <div class="board-big-text">${fullTarget}</div>
+        <div class="board-harmonic-text">🗣️ 諧音：${fullHarmonic}</div>
+        <div class="board-romaji-text">音標/拼音：${fullRomaji}</div>
+        <div class="board-actions-row">
+          <button class="btn-action-primary" onclick="showFullscreen('${fullTarget}', '${fullHarmonic}', '${fullZh}')">
+            📱 放大拿給對方看
+          </button>
+          <button class="btn-action-clear" onclick="clearPieces()">清除</button>
+        </div>
+      `;
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        alert('您的瀏覽器不支援語音朗讀功能。');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const langConfig = LanguageDB[currentLang];
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = langConfig.code;
+      u.rate = langConfig.rate;
+      window.speechSynthesis.speak(u);
+    }
+
+    function showFullscreen(target, harmonic, zh) {
+      document.getElementById('fsTargetText').textContent = target;
+      document.getElementById('fsHarmonicText').textContent = harmonic;
+      document.getElementById('fsZhText').textContent = zh;
+      document.getElementById('fsModal').classList.add('active');
+    }
+
+    function closeFullscreen() {
+      document.getElementById('fsModal').classList.remove('active');
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        document.body.removeAttribute('data-theme');
+        document.getElementById('themeToggleBtn').textContent = '☀️ 淺色';
+      } else {
+        document.body.setAttribute('data-theme', 'dark');
+        document.getElementById('themeToggleBtn').textContent = '🌙 深色';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

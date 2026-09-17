@@ -1,12 +1,14 @@
 ﻿// Service Worker for Luke旅遊紀錄 PWA
-const CACHE_NAME = 'travel-luke-cache-v30';
+const CACHE_NAME = 'travel-luke-cache-v33';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './notion_data.js',
-  './images.png',
   './apple-touch-icon.png',
-  './manifest.json'
+  './manifest.json',
+  './language_cards.html',
+  './travel_assistant_addon.css',
+  './travel_assistant_addon.js',
 ];
 
 // 安裝事件：預先快取核心資源

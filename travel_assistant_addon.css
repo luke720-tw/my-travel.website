@@ -1,0 +1,488 @@
+/* ========================================================
+   實用旅行助手擴充模組 (Travel Assistant Add-on)
+   完全適配現有 Light (毛玻璃) 與 Dark (深藍夜間) 雙主題
+======================================================== */
+
+/* 懸浮捷徑按鈕 (Floating Action Button) */
+.ta-fab-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  cursor: pointer;
+  z-index: 1050;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ta-fab-btn:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 12px 30px rgba(236, 72, 153, 0.5);
+}
+
+.ta-fab-btn:active {
+  transform: scale(0.95);
+}
+
+.ta-fab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1.5px solid #ffffff;
+}
+
+/* 模態視窗遮罩 (Modal Backdrop) */
+.ta-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: taFadeIn 0.2s ease-out forwards;
+}
+
+.ta-modal-backdrop.active {
+  display: flex;
+}
+
+@keyframes taFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 模態視窗本體 (Modal Box) */
+.ta-modal-box {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  background: var(--bg-card, #1e293b);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  animation: taSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes taSlideUp {
+  from { transform: translateY(30px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* 淺色模式毛玻璃適配 */
+[data-theme="light"] .ta-modal-box {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 24px 60px rgba(124, 58, 237, 0.2);
+}
+
+/* 標頭 Header */
+.ta-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color, #334155);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.ta-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main, #f8fafc);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ta-modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.ta-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main, #f8fafc);
+}
+
+/* 標籤導覽分頁列 (Tabs) */
+.ta-nav-tabs {
+  display: flex;
+  padding: 8px 16px 0;
+  gap: 6px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-color, #334155);
+  background: rgba(0, 0, 0, 0.1);
+  scrollbar-width: none;
+}
+
+.ta-nav-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.ta-tab-btn {
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted, #94a3b8);
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 2px solid transparent;
+}
+
+.ta-tab-btn.active {
+  color: var(--accent, #38bdf8);
+  border-bottom-color: var(--accent, #38bdf8);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+[data-theme="light"] .ta-tab-btn.active {
+  color: #7c3aed;
+  border-bottom-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.1);
+}
+
+/* 內容可滾動區域 */
+.ta-modal-body {
+  padding: 18px 20px;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================================
+   日語小卡 (Japanese Cards & Speech)
+======================================================== */
+
+.ta-jp-result-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1.5px dashed var(--border-color, #334155);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+[data-theme="light"] .ta-jp-result-card {
+  background: rgba(245, 243, 255, 0.7);
+  border-color: #c4b5fd;
+}
+
+.ta-jp-empty-tip {
+  text-align: center;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.ta-jp-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.ta-jp-meaning {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent, #38bdf8);
+}
+
+[data-theme="light"] .ta-jp-meaning {
+  color: #7c3aed;
+}
+
+.ta-jp-big-text {
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--text-main, #f8fafc);
+  margin: 6px 0;
+  letter-spacing: 0.5px;
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+.ta-jp-harmonic {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.ta-jp-romaji {
+  font-size: 0.75rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.ta-jp-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.ta-btn-sm {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border-color, #334155);
+  background: var(--bg-card, #1e293b);
+  color: var(--text-main, #f8fafc);
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ta-btn-sm:hover {
+  border-color: var(--accent, #38bdf8);
+}
+
+.ta-btn-primary {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  border-color: #0ea5e9;
+  color: #ffffff;
+}
+
+[data-theme="light"] .ta-btn-primary {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  border-color: #7c3aed;
+}
+
+/* 分類標籤 */
+.ta-cat-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+}
+
+.ta-cat-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.ta-cat-chip {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border: 1px solid var(--border-color, #334155);
+  background: var(--bg-card, #1e293b);
+  color: var(--text-muted, #94a3b8);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ta-cat-chip.active {
+  background: var(--accent, #38bdf8);
+  color: #ffffff;
+  border-color: var(--accent, #38bdf8);
+}
+
+[data-theme="light"] .ta-cat-chip.active {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+}
+
+/* 詞彙按鈕網格 */
+.ta-vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.ta-word-btn {
+  padding: 10px 8px;
+  border-radius: 10px;
+  background: var(--bg-card, #1e293b);
+  border: 1px solid var(--border-color, #334155);
+  color: var(--text-main, #f8fafc);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.ta-word-btn:hover {
+  border-color: var(--accent, #38bdf8);
+  transform: translateY(-1px);
+}
+
+.ta-word-btn:active {
+  transform: scale(0.96);
+}
+
+/* ========================================================
+   匯率與分帳計算機
+======================================================== */
+
+.ta-calc-card {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+[data-theme="light"] .ta-calc-card {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.ta-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ta-input-field {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #334155);
+  background: var(--bg-input, #0f172a);
+  color: var(--text-main, #f8fafc);
+  font-size: 1rem;
+  font-weight: 700;
+  outline: none;
+}
+
+.ta-input-field:focus {
+  border-color: var(--accent, #38bdf8);
+}
+
+/* 全螢幕大字出示視窗 (Showcase to Clerk) */
+.ta-fullscreen-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  color: #0f172a;
+  z-index: 3000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+}
+
+.ta-fullscreen-modal.active {
+  display: flex;
+}
+
+.ta-fs-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.ta-fs-jp {
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 16px;
+  line-height: 1.35;
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+.ta-fs-harmonic {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #d97706;
+  margin-bottom: 8px;
+}
+
+.ta-fs-zh {
+  font-size: 1.1rem;
+  color: #64748b;
+}
+
+
+.ta-guide-box {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+[data-theme="light"] .ta-guide-box {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.ta-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.ta-guide-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.5;
+}
