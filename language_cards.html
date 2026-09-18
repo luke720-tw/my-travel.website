@@ -454,15 +454,308 @@
       font-size: 1.2rem;
       color: #64748b;
     }
+  
+    /* 即時同步燈號徽章 (Sync Badge) */
+    .sync-status-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px #10b981;
+      transition: all 0.3s;
+    }
+    .sync-dot.offline {
+      background: #f59e0b;
+      box-shadow: 0 0 6px #f59e0b;
+    }
+    .sync-dot.syncing {
+      background: #38bdf8;
+      box-shadow: 0 0 6px #38bdf8;
+      animation: syncPulse 1s infinite;
+    }
+    @keyframes syncPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    /* 新增字卡按鈕 */
+    .btn-add-card {
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      color: #ffffff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 3px 10px rgba(139, 92, 246, 0.28);
+      transition: all 0.2s;
+    }
+    .btn-add-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(139, 92, 246, 0.38);
+    }
+    .form-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .btn-auto-gen {
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--primary);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      line-height: 1.2;
+    }
+    .btn-auto-gen:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+    }
+    .btn-auto-gen:active {
+      transform: scale(0.96);
+    }
+    .btn-auto-gen:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-add-card:active {
+      transform: scale(0.96);
+    }
+
+    /* 自訂字卡樣式與標籤 */
+    .word-card.is-custom {
+      border: 1.5px solid rgba(139, 92, 246, 0.45);
+      background: linear-gradient(180deg, var(--bg-card), rgba(139, 92, 246, 0.04));
+      position: relative;
+    }
+    .word-card.is-custom .word-card-zh {
+      padding-right: 56px;
+    }
+    .card-badges {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge-custom {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .btn-delete-card {
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-delete-card:hover {
+      background: #ef4444;
+      color: #ffffff;
+      transform: scale(1.12);
+    }
+
+    /* 彈窗 Modal 樣式 */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    .modal-backdrop.active {
+      display: flex;
+      animation: modalFadeIn 0.2s ease-out forwards;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-box {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-sizing: border-box;
+      animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes modalSlideUp {
+      from { transform: translateY(24px) scale(0.97); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .modal-close-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--text-main);
+    }
+    .modal-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 70vh;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-group label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-base);
+      color: var(--text-main);
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: var(--bg-base);
+    }
+    .btn-cancel {
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-submit {
+      padding: 8px 18px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      color: #ffffff;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+    }
+
   </style>
+  <!-- Firebase Realtime Database SDK (Compat for pure HTML/JS) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
   <header>
     <div class="header-title">
       <span>🌐</span> 多國語言旅行小卡
+      <div class="sync-status-wrap" id="syncStatusWrap" title="Firebase 雲端跨裝置即時雙向同步">
+        <span class="sync-dot" id="syncDot"></span>
+        <span id="syncLabel">雲端已連線</span>
+      </div>
     </div>
-    <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️ 淺色</button>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn-add-card" id="btnAddCard" onclick="openAddCardModal()">➕ 新增字卡</button>
+      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">☀️ 淺色</button>
+    </div>
   </header>
 
   <div class="app-wrap">
@@ -492,6 +785,7 @@
     <div class="category-nav-wrapper">
       <button type="button" class="cat-nav-btn" onclick="scrollCategory(-180)" title="向左滑動">‹</button>
       <div class="category-scroll" id="catScroll">
+        <button class="cat-pill" data-cat="custom" onclick="setCategory('custom')">⭐ 自訂字卡</button>
         <button class="cat-pill active" data-cat="basic" onclick="setCategory('basic')">基本禮貌</button>
         <button class="cat-pill" data-cat="dining" onclick="setCategory('dining')">餐飲美食</button>
         <button class="cat-pill" data-cat="shopping" onclick="setCategory('shopping')">購物退稅</button>
@@ -707,7 +1001,431 @@
     let currentCat = 'basic';
     let selectedPieces = [];
 
+    
+    // ========================================================
+    // Firebase Realtime Database 配置與跨裝置即時同步引擎
+    // ========================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyA6EGepFAH6zWlzN9rRgnkn-fEBDm-FH4Y",
+      authDomain: "travelluke-0001.firebaseapp.com",
+      databaseURL: "https://travelluke-0001-default-rtdb.firebaseio.com",
+      projectId: "travelluke-0001",
+      storageBucket: "travelluke-0001.firebasestorage.app",
+      messagingSenderId: "511871957114",
+      appId: "1:511871957114:web:70e7d07c5b1e07565ee3c3",
+      measurementId: "G-D8NGRXY9JH"
+    };
+
+    function updateSyncStatus(status) {
+      const dot = document.getElementById('syncDot');
+      const label = document.getElementById('syncLabel');
+      if (!dot || !label) return;
+      if (status === 'online') {
+        dot.className = 'sync-dot';
+        label.textContent = '雲端已同步';
+        label.style.color = '#10b981';
+      } else if (status === 'syncing') {
+        dot.className = 'sync-dot syncing';
+        label.textContent = '同步中...';
+        label.style.color = '#0284c7';
+      } else if (status === 'offline') {
+        dot.className = 'sync-dot offline';
+        label.textContent = '離線快取中';
+        label.style.color = '#d97706';
+      } else {
+        dot.className = 'sync-dot syncing';
+        label.textContent = '連線中...';
+        label.style.color = '#0284c7';
+      }
+    }
+
+    // 自訂字卡管理器 (支援 Firebase 跨裝置即時雙向同步 + 本地離線快取)
+    const CustomCardsManager = {
+      storageKey: 'custom_language_cards_v1',
+      cards: [],
+      firebaseDbRef: null,
+      isOnline: false,
+
+      init() {
+        this.loadLocal();
+        this.initFirebase();
+      },
+
+      loadLocal() {
+        try {
+          const raw = localStorage.getItem(this.storageKey);
+          if (raw) {
+            this.cards = JSON.parse(raw);
+          }
+        } catch (e) {
+          console.warn('載入本地自訂字卡失敗:', e);
+          this.cards = [];
+        }
+      },
+
+      saveLocal() {
+        try {
+          localStorage.setItem(this.storageKey, JSON.stringify(this.cards));
+        } catch (e) {
+          console.warn('儲存本地自訂字卡失敗:', e);
+        }
+      },
+
+      initFirebase() {
+        if (typeof firebase === 'undefined') {
+          console.warn('Firebase SDK 未載入，採用離線模式');
+          updateSyncStatus('offline');
+          return;
+        }
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+          }
+          const db = firebase.database();
+          this.firebaseDbRef = db.ref('custom_language_cards/v1');
+
+          // 連線監聽
+          db.ref('.info/connected').on('value', (snap) => {
+            this.isOnline = snap.val() === true;
+            updateSyncStatus(this.isOnline ? 'online' : 'offline');
+          });
+
+          // 跨裝置即時雙向同步廣播
+          updateSyncStatus('connecting');
+          this.firebaseDbRef.on('value', (snapshot) => {
+            const val = snapshot.val();
+            if (val) {
+              this.cards = Object.values(val);
+            } else {
+              this.cards = [];
+            }
+            this.saveLocal();
+            updateSyncStatus('online');
+            renderVocabGrid();
+          }, (error) => {
+            console.warn('Firebase 同步異常:', error);
+            updateSyncStatus('offline');
+          });
+        } catch (err) {
+          console.warn('初始化 Firebase 失敗:', err);
+          updateSyncStatus('offline');
+        }
+      },
+
+      async addCard(card) {
+        card.id = card.id || 'card_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+        card.createdAt = card.createdAt || new Date().toISOString();
+        card.isCustom = true;
+
+        // 本地立即生效
+        this.cards.push(card);
+        this.saveLocal();
+        renderVocabGrid();
+
+        // 雲端同步
+        if (this.firebaseDbRef) {
+          updateSyncStatus('syncing');
+          try {
+            await this.firebaseDbRef.child(card.id).set(card);
+            updateSyncStatus('online');
+          } catch (err) {
+            console.error('推播自訂字卡至 Firebase 失敗:', err);
+            updateSyncStatus('offline');
+          }
+        }
+      },
+
+      async deleteCard(cardId) {
+        this.cards = this.cards.filter(c => c.id !== cardId);
+        this.saveLocal();
+        renderVocabGrid();
+
+        if (this.firebaseDbRef) {
+          updateSyncStatus('syncing');
+          try {
+            await this.firebaseDbRef.child(cardId).remove();
+            updateSyncStatus('online');
+          } catch (err) {
+            console.error('從 Firebase 刪除自訂字卡失敗:', err);
+            updateSyncStatus('offline');
+          }
+        }
+      },
+
+      getCardsFor(lang, cat) {
+        if (cat === 'custom') {
+          return this.cards.filter(c => c.lang === lang);
+        }
+        return this.cards.filter(c => c.lang === lang && c.cat === cat);
+      }
+    };
+
+    let currentRenderedList = [];
+
+    // 開啟新增字卡彈窗
+    function openAddCardModal() {
+      const modal = document.getElementById('addCardModal');
+      const langSel = document.getElementById('cardLangInput');
+      const catSel = document.getElementById('cardCatInput');
+      if (langSel) langSel.value = currentLang;
+      if (catSel) catSel.value = (currentCat === 'custom') ? 'basic' : currentCat;
+      if (modal) modal.classList.add('active');
+      const firstInput = document.getElementById('cardZhInput');
+      if (firstInput) setTimeout(() => firstInput.focus(), 150);
+    }
+
+    function closeAddCardModal() {
+      const modal = document.getElementById('addCardModal');
+      if (modal) modal.classList.remove('active');
+      const form = document.getElementById('addCardForm');
+      if (form) form.reset();
+    }
+
+    const Romanizer = {
+      hangulToRomaji(text) {
+        if (!text) return '';
+        const CHOSEONG = ['g', 'kk', 'n', 'd', 'tt', 'r', 'm', 'b', 'pp', 's', 'ss', '', 'j', 'jj', 'ch', 'k', 't', 'p', 'h'];
+        const JUNGSEONG = ['a', 'ae', 'ya', 'yae', 'eo', 'e', 'yeo', 'ye', 'o', 'wa', 'wae', 'oe', 'yo', 'u', 'wo', 'we', 'wi', 'yu', 'eu', 'ui', 'i'];
+        const JONGSEONG = ['', 'k', 'k', 'ks', 'n', 'nj', 'nh', 't', 'l', 'lg', 'lm', 'lb', 'ls', 'lt', 'lp', 'lh', 'm', 'p', 'ps', 's', 'ss', 'ng', 'j', 'ch', 'k', 't', 'p', 'h'];
+
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+          const code = text.charCodeAt(i);
+          if (code >= 0xAC00 && code <= 0xD7A3) {
+            const offset = code - 0xAC00;
+            const l = Math.floor(offset / 588);
+            const v = Math.floor((offset % 588) / 28);
+            const t = offset % 28;
+            result += (CHOSEONG[l] || '') + (JUNGSEONG[v] || '') + (JONGSEONG[t] || '');
+          } else {
+            result += text[i];
+          }
+        }
+        return result;
+      },
+
+      kanaToRomaji(text) {
+        if (!text) return '';
+        const KANA_MAP = {
+          'あ':'a','い':'i','う':'u','え':'e','お':'o',
+          'か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko',
+          'さ':'sa','し':'shi','す':'su','せ':'se','そ':'so',
+          'た':'ta','ち':'chi','つ':'tsu','て':'te','と':'to',
+          'な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no',
+          'は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho',
+          'ま':'ma','み':'mi','む':'mu','め':'me','も':'mo',
+          'や':'ya','ゆ':'yu','よ':'yo',
+          'ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro',
+          'わ':'wa','を':'wo','ん':'n',
+          'が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go',
+          'ざ':'za','じ':'ji','ず':'zu','ぜ':'ze','ぞ':'zo',
+          'だ':'da','ぢ':'ji','づ':'zu','で':'de','ど':'do',
+          'ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo',
+          'ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po',
+          'きゃ':'kya','きゅ':'kyu','きょ':'kyo',
+          'しゃ':'sha','しゅ':'shu','しょ':'sho',
+          'ちゃ':'cha','ちゅ':'chu','ちょ':'cho',
+          'にゃ':'nya','にゅ':'nyu','にょ':'nyo',
+          'ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo',
+          'みゃ':'mya','みゅ':'myu','みょ':'myo',
+          'りゃ':'rya','りゅ':'ryu','りょ':'ryo',
+          'ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo',
+          'じゃ':'ja','じゅ':'ju','じょ':'jo',
+          'びゃ':'bya','びゅ':'byu','びょ':'byo',
+          'ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo'
+        };
+
+        let converted = '';
+        for (let i = 0; i < text.length; i++) {
+          const code = text.charCodeAt(i);
+          if (code >= 0x30A1 && code <= 0x30F6) {
+            converted += String.fromCharCode(code - 0x60);
+          } else {
+            converted += text[i];
+          }
+        }
+
+        let res = '';
+        let i = 0;
+        while (i < converted.length) {
+          if (i + 1 < converted.length) {
+            const pair = converted.substring(i, i + 2);
+            if (KANA_MAP[pair]) {
+              res += KANA_MAP[pair];
+              i += 2;
+              continue;
+            }
+          }
+          const ch = converted[i];
+          if (ch === 'っ' && i + 1 < converted.length) {
+            const nextPair = converted.substring(i + 1, i + 3);
+            const nextChar = converted.substring(i + 1, i + 2);
+            const nextRomaji = KANA_MAP[nextPair] || KANA_MAP[nextChar];
+            if (nextRomaji) {
+              res += nextRomaji[0];
+              i++;
+              continue;
+            }
+          }
+          if (ch === 'ー') {
+            const lastVowel = res.slice(-1);
+            if (['a','e','i','o','u'].includes(lastVowel)) {
+              res += lastVowel;
+            }
+            i++;
+            continue;
+          }
+          if (KANA_MAP[ch]) {
+            res += KANA_MAP[ch];
+          } else {
+            res += ch;
+          }
+          i++;
+        }
+        return res;
+      },
+
+      async generate(lang, text) {
+        if (!text) return '';
+        const cleanText = text.trim();
+        if (lang === 'en') {
+          return cleanText;
+        }
+
+        // 優先嘗試線上高精度 Phonetic API（支援日文漢字發音、韓文連音音變）
+        try {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 2200);
+          const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${lang}&tl=en&dt=t&dt=rm&q=${encodeURIComponent(cleanText)}`;
+          const resp = await fetch(url, { signal: controller.signal });
+          clearTimeout(timer);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data && data[0]) {
+              for (const seg of data[0]) {
+                if (seg && seg[3]) {
+                  return seg[3].trim();
+                }
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('線上拼音生成失敗或離線，切換為本地離線演算法:', err);
+        }
+
+        // 離線演算法備援
+        if (lang === 'ja') {
+          return this.kanaToRomaji(cleanText);
+        } else if (lang === 'ko') {
+          return this.hangulToRomaji(cleanText);
+        }
+        return cleanText;
+      }
+    };
+
+    async function autoGenerateRomaji(isManual = false) {
+      const targetInput = document.getElementById('cardTargetInput');
+      const romajiInput = document.getElementById('cardRomajiInput');
+      const langInput = document.getElementById('cardLangInput');
+      const btn = document.getElementById('btnAutoRomaji');
+
+      if (!targetInput || !romajiInput || !langInput) return;
+
+      const targetText = targetInput.value.trim();
+      const lang = langInput.value;
+
+      if (!targetText) {
+        if (isManual) {
+          alert('請先輸入外語原文！');
+          targetInput.focus();
+        }
+        return;
+      }
+
+      const originalBtnText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.innerHTML = '⏳ 產生中...';
+        btn.disabled = true;
+      }
+
+      try {
+        const generated = await Romanizer.generate(lang, targetText);
+        if (generated) {
+          romajiInput.value = generated;
+          if (isManual) {
+            romajiInput.style.transition = 'box-shadow 0.3s ease';
+            romajiInput.style.boxShadow = '0 0 0 3px rgba(139, 92, 246, 0.35)';
+            setTimeout(() => {
+              romajiInput.style.boxShadow = '';
+            }, 800);
+          }
+        }
+      } catch (e) {
+        console.error('自動產生拼音錯誤:', e);
+      } finally {
+        if (btn) {
+          btn.innerHTML = originalBtnText || '✨ 自動產生';
+          btn.disabled = false;
+        }
+      }
+    }
+
+    // 監聽原文輸入完畢後自動觸發（若拼音欄位為空）
+    document.addEventListener('DOMContentLoaded', () => {
+      const targetInput = document.getElementById('cardTargetInput');
+      if (targetInput) {
+        targetInput.addEventListener('blur', () => {
+          const targetVal = targetInput.value.trim();
+          const romajiInput = document.getElementById('cardRomajiInput');
+          if (targetVal && romajiInput && !romajiInput.value.trim()) {
+            autoGenerateRomaji(false);
+          }
+        });
+      }
+    });
+
+    function handleAddCardSubmit(e) {
+      e.preventDefault();
+      const lang = document.getElementById('cardLangInput').value;
+      const cat = document.getElementById('cardCatInput').value;
+      const zh = document.getElementById('cardZhInput').value.trim();
+      const target = document.getElementById('cardTargetInput').value.trim();
+      const harmonic = document.getElementById('cardHarmonicInput').value.trim();
+      const romaji = document.getElementById('cardRomajiInput').value.trim();
+
+      if (!zh || !target) {
+        alert('請填寫中文意思與外語內容！');
+        return;
+      }
+
+      CustomCardsManager.addCard({
+        lang,
+        cat,
+        zh,
+        target,
+        harmonic,
+        romaji
+      });
+
+      closeAddCardModal();
+      
+      // 自動切換到對應語言與分類方便確認
+      if (currentLang !== lang) {
+        setLanguage(lang);
+      }
+      if (currentCat !== cat && currentCat !== 'custom') {
+        setCategory(cat);
+      }
+    }
+
+    function confirmDeleteCard(cardId, cardZh) {
+      if (confirm(`確定要刪除自訂字卡「${cardZh}」嗎？\n刪除後手機與電腦將同步移除。`)) {
+        CustomCardsManager.deleteCard(cardId);
+      }
+    }
+
     function init() {
+      CustomCardsManager.init();
       renderVocabGrid();
       renderSentenceBoard();
       setupCategoryDragScroll();
@@ -816,18 +1534,51 @@
 
     function renderVocabGrid() {
       const grid = document.getElementById('vocabGrid');
-      const list = LanguageDB[currentLang].categories[currentCat] || [];
-      grid.innerHTML = list.map((item, idx) => `
-        <div class="word-card" onclick="addPiece(${idx})">
-          <div class="word-card-zh">${item.zh}</div>
-          <div class="word-card-target">${item.target}</div>
-          <div class="word-card-harmonic">🗣️ ${item.harmonic}</div>
-        </div>
-      `).join('');
+      if (!grid) return;
+      
+      let list = [];
+      if (currentCat === 'custom') {
+        list = CustomCardsManager.getCardsFor(currentLang, 'custom');
+      } else {
+        const defaultList = (LanguageDB[currentLang].categories[currentCat] || []).map(item => ({ ...item, isCustom: false }));
+        const customList = CustomCardsManager.getCardsFor(currentLang, currentCat);
+        list = [...customList, ...defaultList];
+      }
+
+      currentRenderedList = list;
+
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 36px 16px; color: var(--text-muted); background: var(--bg-card); border-radius: 16px; border: 1px dashed var(--border-color); box-shadow: var(--shadow-sm);">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">📭</div>
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: var(--text-main);">此分類目前沒有字卡</div>
+            <div style="font-size: 0.84rem; margin-bottom: 16px; color: var(--text-muted);">您可以隨時點選下方按鈕新增專屬字卡，電腦與手機將即時同步！</div>
+            <button class="btn-add-card" onclick="openAddCardModal()" style="margin: 0 auto;">➕ 新增自訂字卡</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = list.map((item, idx) => {
+        const isCustom = !!item.isCustom;
+        return `
+          <div class="word-card ${isCustom ? 'is-custom' : ''}" onclick="addPiece(${idx})">
+            ${isCustom ? `
+              <div class="card-badges">
+                <span class="badge-custom">自訂</span>
+                <button class="btn-delete-card" onclick="event.stopPropagation(); confirmDeleteCard('${item.id}', '${item.zh}')" title="刪除字卡">✕</button>
+              </div>
+            ` : ''}
+            <div class="word-card-zh">${item.zh}</div>
+            <div class="word-card-target">${item.target}</div>
+            <div class="word-card-harmonic">🗣️ ${item.harmonic || '（無諧音）'}</div>
+          </div>
+        `;
+      }).join('');
     }
 
     function addPiece(idx) {
-      const item = LanguageDB[currentLang].categories[currentCat][idx];
+      const item = currentRenderedList[idx];
       if (!item) return;
       if (selectedPieces.length >= 3) {
         selectedPieces.shift();
@@ -912,7 +1663,75 @@
       }
     }
 
+    
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('addCardModal');
+      if (e.target === modal) closeAddCardModal();
+    });
+
     window.addEventListener('DOMContentLoaded', init);
   </script>
+
+  <!-- 新增字卡彈窗 Modal -->
+  <div class="modal-backdrop" id="addCardModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>➕</span> 新增自訂語言字卡
+        </div>
+        <button class="modal-close-btn" onclick="closeAddCardModal()">✕</button>
+      </div>
+      <form id="addCardForm" onsubmit="handleAddCardSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>選擇語言</label>
+            <select id="cardLangInput" class="form-control">
+              <option value="ja">🇯🇵 日語 (Japanese)</option>
+              <option value="ko">🇰🇷 韓語 (Korean)</option>
+              <option value="en">🇺🇸 英語 (English)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>情境分類</label>
+            <select id="cardCatInput" class="form-control">
+              <option value="basic">基本禮貌</option>
+              <option value="dining">餐飲美食</option>
+              <option value="shopping">購物退稅</option>
+              <option value="transport">交通問路</option>
+              <option value="facility">公共設施</option>
+              <option value="hotel">飯店住宿</option>
+              <option value="emergency">緊急應對</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>中文意思 <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="cardZhInput" class="form-control" placeholder="例如：請給我溫開水 / 請問能打折嗎？" required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label>外語內容 (日文/韓文/英文) <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="cardTargetInput" class="form-control" placeholder="例如：白湯をください / 따뜻한 물 주세요" required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label>中文諧音 <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(選填，方便直接照唸)</span></label>
+            <input type="text" id="cardHarmonicInput" class="form-control" placeholder="例如：賽悠 歐 哭打賽" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <div class="form-label-row">
+              <label style="margin-bottom:0;">音標 / 羅馬拼音 <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(選填)</span></label>
+              <button type="button" id="btnAutoRomaji" class="btn-auto-gen" onclick="autoGenerateRomaji(true)" title="根據外語原文自動產生羅馬拼音">
+                ✨ 自動產生
+              </button>
+            </div>
+            <input type="text" id="cardRomajiInput" class="form-control" placeholder="例如：Sayu o kudasai" autocomplete="off">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" onclick="closeAddCardModal()">取消</button>
+          <button type="submit" class="btn-submit">💾 儲存並同步到手機/雲端</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </body>
 </html>
